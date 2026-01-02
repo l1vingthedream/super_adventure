@@ -1,0 +1,20 @@
+[gd_scene load_steps=5 format=3 uid="uid://cqbsm2fkh8n7h"]
+
+[ext_resource type="Script" uid="uid://b33hikjwkbj2f" path="res://scripts/screen_manager.gd" id="1_screen"]
+[ext_resource type="Texture2D" uid="uid://ixaowt4esv1t" path="res://assets/tileset.png" id="2_tileset"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_main"]
+texture = ExtResource("2_tileset")
+
+[sub_resource type="TileSet" id="TileSet_overworld"]
+sources/0 = SubResource("TileSetAtlasSource_main")
+
+[node name="Overworld" type="Node2D"]
+script = ExtResource("1_screen")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(128, 88)
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+position = Vector2(-1, 0)
+tile_set = SubResource("TileSet_overworld")
