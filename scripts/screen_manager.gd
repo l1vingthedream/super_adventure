@@ -27,6 +27,9 @@ var map_width: int = 0
 var map_height: int = 0
 var is_transitioning := false
 var transition_target := Vector2.ZERO
+var transition_direction := Vector2i.ZERO
+var transitioning_player: CharacterBody2D = null
+var player_transition_offset := Vector2.ZERO  # Offset from camera center during transition
 
 
 func _ready() -> void:
@@ -139,8 +142,57 @@ func get_screen_from_position(pos: Vector2) -> Vector2i:
 	)
 
 
+func can_transition_to(screen: Vector2i) -> bool:
+	## Check if the target screen is within map bounds
+	var screens_wide := map_width / SCREEN_WIDTH_TILES
+	var screens_tall := map_height / SCREEN_HEIGHT_TILES
+
+	return screen.x >= 0 and screen.x < screens_wide and screen.y >= 0 and screen.y < screens_tall
+
+
+func start_player_transition(new_screen: Vector2i, direction: Vector2i, player: CharacterBody2D) -> void:
+	## Start a screen transition triggered by player movement
+	if is_transitioning:
+		return
+
+	is_transitioning = true
+	current_screen = new_screen
+	transition_direction = direction
+	transitioning_player = player
+
+	transition_target = Vector2(
+		new_screen.x * SCREEN_WIDTH_PX + SCREEN_WIDTH_PX / 2.0,
+		new_screen.y * SCREEN_HEIGHT_PX + SCREEN_HEIGHT_PX / 2.0
+	)
+
+	# Reposition player to opposite edge of new screen
+	reposition_player_for_transition(player, direction)
+
+
+func reposition_player_for_transition(player: CharacterBody2D, direction: Vector2i) -> void:
+	## Move player to the entry edge of the new screen
+	var new_pos := player.global_position
+
+	# Small offset to place player just inside the new screen
+	var edge_offset := 16.0
+
+	if direction.x > 0:  # Moving right
+		new_pos.x = current_screen.x * SCREEN_WIDTH_PX + edge_offset
+	elif direction.x < 0:  # Moving left
+		new_pos.x = (current_screen.x + 1) * SCREEN_WIDTH_PX - edge_offset
+	elif direction.y > 0:  # Moving down
+		new_pos.y = current_screen.y * SCREEN_HEIGHT_PX + edge_offset
+	elif direction.y < 0:  # Moving up
+		new_pos.y = (current_screen.y + 1) * SCREEN_HEIGHT_PX - edge_offset
+
+	player.global_position = new_pos
+
+	# Calculate offset from camera center for smooth movement
+	player_transition_offset = player.global_position - transition_target
+
+
 func transition_to_screen(new_screen: Vector2i) -> void:
-	## Start a smooth screen transition
+	## Start a smooth screen transition (camera only, no player repositioning)
 	if is_transitioning:
 		return
 
@@ -163,9 +215,17 @@ func _process(delta: float) -> void:
 
 		if distance <= move_amount:
 			camera.position = transition_target
+			# Transition complete - position player at final spot
+			if transitioning_player:
+				transitioning_player.global_position = transition_target + player_transition_offset
+				transitioning_player = null
 			is_transitioning = false
+			transition_direction = Vector2i.ZERO
 		else:
 			camera.position += direction * move_amount
+			# Move player along with camera
+			if transitioning_player:
+				transitioning_player.global_position = camera.position + player_transition_offset
 
 
 # Debug controls removed - player movement now handles screen transitions

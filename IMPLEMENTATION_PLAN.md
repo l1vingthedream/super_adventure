@@ -7,18 +7,19 @@ A spiritual successor to the original Legend of Zelda, built with Godot 4.x.
 ## Phase 1: Core Player Mechanics
 
 ### 1.1 Player Character
-- [ ] Create Player scene with AnimatedSprite2D
-- [ ] 4-directional movement (up, down, left, right)
-- [ ] Sprite animations: idle, walk, attack (4 directions each)
-- [ ] Player collision shape (hitbox)
-- [ ] Movement speed matching NES Zelda feel (~90 pixels/sec)
+- [x] Create Player scene with AnimatedSprite2D
+- [x] 4-directional movement (up, down, left, right)
+- [x] Sprite animations: idle, walk (4 directions each)
+- [x] Sprite animations: attack (4 directions)
+- [x] Player collision shape (hitbox)
+- [x] Movement speed matching NES Zelda feel (~90 pixels/sec)
 
 ### 1.2 Screen Transitions
-- [ ] Detect when player reaches screen edge
-- [ ] Lock player input during transition
-- [ ] Smooth camera scroll to adjacent screen
-- [ ] Reposition player on new screen edge
-- [ ] Screen boundary collision (prevent walking off-map)
+- [x] Detect when player reaches screen edge
+- [x] Lock player input during transition
+- [x] Smooth camera scroll to adjacent screen
+- [x] Reposition player on new screen edge
+- [x] Screen boundary collision (prevent walking off-map)
 
 ### 1.3 Collision System
 - [ ] Implement tile-based collision from tilemap
