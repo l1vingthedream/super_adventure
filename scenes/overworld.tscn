@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://cqbsm2fkh8n7h"]
+[gd_scene load_steps=6 format=3 uid="uid://cqbsm2fkh8n7h"]
 
 [ext_resource type="Script" uid="uid://b33hikjwkbj2f" path="res://scripts/screen_manager.gd" id="1_screen"]
 [ext_resource type="Texture2D" uid="uid://ixaowt4esv1t" path="res://assets/tileset.png" id="2_tileset"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_main"]
 texture = ExtResource("2_tileset")
@@ -16,5 +17,8 @@ script = ExtResource("1_screen")
 position = Vector2(128, 88)
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
-position = Vector2(-1, 0)
+position = Vector2(-1, -2)
 tile_set = SubResource("TileSet_overworld")
+
+[node name="Player" parent="." instance=ExtResource("3_player")]
+position = Vector2(1920, 1320)

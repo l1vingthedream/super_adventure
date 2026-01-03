@@ -168,13 +168,5 @@ func _process(delta: float) -> void:
 			camera.position += direction * move_amount
 
 
-func _input(event: InputEvent) -> void:
-	## Debug controls for testing screen transitions
-	if event.is_action_pressed("ui_right"):
-		transition_to_screen(current_screen + Vector2i(1, 0))
-	elif event.is_action_pressed("ui_left"):
-		transition_to_screen(current_screen + Vector2i(-1, 0))
-	elif event.is_action_pressed("ui_down"):
-		transition_to_screen(current_screen + Vector2i(0, 1))
-	elif event.is_action_pressed("ui_up"):
-		transition_to_screen(current_screen + Vector2i(0, -1))
+# Debug controls removed - player movement now handles screen transitions
+# To manually test transitions, use: transition_to_screen(Vector2i(x, y))
