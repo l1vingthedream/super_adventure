@@ -214,6 +214,10 @@ func update_sword_position(sword_frame: int) -> void:
 		sword_sprite.animation = sword_anim
 		sword_sprite.frame = sword_frame
 
+	# Apply subpixel snapping to sword sprite (same as player sprite)
+	var sword_subpixel := sword.global_position - sword.global_position.floor()
+	sword_sprite.offset = -sword_subpixel
+
 
 func check_screen_transition(old_screen: Vector2i) -> void:
 	## Check if player crossed a screen boundary and trigger transition

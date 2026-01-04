@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=36 format=3]
 
 [ext_resource type="Texture2D" uid="uid://m28q3j5botps" path="res://assets/Player_Sprites.png" id="1_sprites"]
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="2_script"]
@@ -26,6 +26,90 @@ region = Rect2(69, 11, 16, 16)
 [sub_resource type="AtlasTexture" id="walk_up_2"]
 atlas = ExtResource("1_sprites")
 region = Rect2(86, 11, 16, 16)
+
+[sub_resource type="AtlasTexture" id="attack_down_1"]
+atlas = ExtResource("1_sprites")
+region = Rect2(1, 47, 16, 16)
+
+[sub_resource type="AtlasTexture" id="attack_down_2"]
+atlas = ExtResource("1_sprites")
+region = Rect2(18, 47, 16, 16)
+
+[sub_resource type="AtlasTexture" id="attack_down_3"]
+atlas = ExtResource("1_sprites")
+region = Rect2(35, 47, 16, 16)
+
+[sub_resource type="AtlasTexture" id="attack_down_4"]
+atlas = ExtResource("1_sprites")
+region = Rect2(52, 47, 16, 16)
+
+[sub_resource type="AtlasTexture" id="attack_right_1"]
+atlas = ExtResource("1_sprites")
+region = Rect2(1, 77, 16, 16)
+
+[sub_resource type="AtlasTexture" id="attack_right_2"]
+atlas = ExtResource("1_sprites")
+region = Rect2(18, 77, 16, 16)
+
+[sub_resource type="AtlasTexture" id="attack_right_3"]
+atlas = ExtResource("1_sprites")
+region = Rect2(35, 77, 16, 16)
+
+[sub_resource type="AtlasTexture" id="attack_right_4"]
+atlas = ExtResource("1_sprites")
+region = Rect2(52, 77, 16, 16)
+
+[sub_resource type="AtlasTexture" id="attack_up_1"]
+atlas = ExtResource("1_sprites")
+region = Rect2(1, 109, 16, 16)
+
+[sub_resource type="AtlasTexture" id="attack_up_2"]
+atlas = ExtResource("1_sprites")
+region = Rect2(18, 109, 16, 16)
+
+[sub_resource type="AtlasTexture" id="attack_up_3"]
+atlas = ExtResource("1_sprites")
+region = Rect2(35, 109, 16, 16)
+
+[sub_resource type="AtlasTexture" id="attack_up_4"]
+atlas = ExtResource("1_sprites")
+region = Rect2(52, 109, 16, 16)
+
+[sub_resource type="AtlasTexture" id="sword_down_1"]
+atlas = ExtResource("1_sprites")
+region = Rect2(23, 63, 8, 11)
+
+[sub_resource type="AtlasTexture" id="sword_down_2"]
+atlas = ExtResource("1_sprites")
+region = Rect2(40, 63, 8, 7)
+
+[sub_resource type="AtlasTexture" id="sword_down_3"]
+atlas = ExtResource("1_sprites")
+region = Rect2(57, 63, 8, 3)
+
+[sub_resource type="AtlasTexture" id="sword_right_1"]
+atlas = ExtResource("1_sprites")
+region = Rect2(34, 78, 11, 16)
+
+[sub_resource type="AtlasTexture" id="sword_right_2"]
+atlas = ExtResource("1_sprites")
+region = Rect2(51, 78, 7, 16)
+
+[sub_resource type="AtlasTexture" id="sword_right_3"]
+atlas = ExtResource("1_sprites")
+region = Rect2(68, 78, 3, 16)
+
+[sub_resource type="AtlasTexture" id="sword_up_1"]
+atlas = ExtResource("1_sprites")
+region = Rect2(21, 97, 8, 12)
+
+[sub_resource type="AtlasTexture" id="sword_up_2"]
+atlas = ExtResource("1_sprites")
+region = Rect2(38, 98, 8, 11)
+
+[sub_resource type="AtlasTexture" id="sword_up_3"]
+atlas = ExtResource("1_sprites")
+region = Rect2(55, 106, 8, 3)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_player"]
 animations = [{
@@ -85,10 +169,109 @@ animations = [{
 "loop": true,
 "name": &"walk_side",
 "speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("attack_down_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_down_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_down_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_down_4")
+}],
+"loop": false,
+"name": &"attack_down",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("attack_up_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_up_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_up_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_up_4")
+}],
+"loop": false,
+"name": &"attack_up",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("attack_right_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_right_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_right_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("attack_right_4")
+}],
+"loop": false,
+"name": &"attack_side",
+"speed": 12.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_sword"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("sword_down_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("sword_down_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("sword_down_3")
+}],
+"loop": false,
+"name": &"sword_down",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("sword_up_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("sword_up_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("sword_up_3")
+}],
+"loop": false,
+"name": &"sword_up",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("sword_right_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("sword_right_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("sword_right_3")
+}],
+"loop": false,
+"name": &"sword_side",
+"speed": 12.0
 }]
 
 [sub_resource type="RectangleShape2D" id="collision_shape"]
 size = Vector2(12, 12)
+
+[sub_resource type="RectangleShape2D" id="sword_collision"]
+size = Vector2(8, 12)
 
 [node name="Player" type="CharacterBody2D"]
 script = ExtResource("2_script")
@@ -100,3 +283,16 @@ animation = &"idle_down"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 4)
 shape = SubResource("collision_shape")
+
+[node name="Sword" type="Area2D" parent="."]
+visible = false
+collision_layer = 2
+collision_mask = 4
+
+[node name="SwordSprite" type="AnimatedSprite2D" parent="Sword"]
+sprite_frames = SubResource("SpriteFrames_sword")
+animation = &"sword_down"
+
+[node name="SwordHitbox" type="CollisionShape2D" parent="Sword"]
+shape = SubResource("sword_collision")
+disabled = true

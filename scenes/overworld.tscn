@@ -17,7 +17,6 @@ script = ExtResource("1_screen")
 position = Vector2(128, 88)
 
 [node name="TileMapLayer" type="TileMapLayer" parent="."]
-position = Vector2(-1, -2)
 tile_set = SubResource("TileSet_overworld")
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
