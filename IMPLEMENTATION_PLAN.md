@@ -10,7 +10,7 @@ A spiritual successor to the original Legend of Zelda, built with Godot 4.x.
 - [x] Create Player scene with AnimatedSprite2D
 - [x] 4-directional movement (up, down, left, right)
 - [x] Sprite animations: idle, walk (4 directions each)
-- [x] Sprite animations: attack (4 directions)
+- [ ] Sprite animations: attack (4 directions)
 - [x] Player collision shape (hitbox)
 - [x] Movement speed matching NES Zelda feel (~90 pixels/sec)
 
