@@ -10,8 +10,8 @@ const SCREEN_WIDTH_PX := SCREEN_WIDTH_TILES * TILE_SIZE  # 256
 const SCREEN_HEIGHT_PX := SCREEN_HEIGHT_TILES * TILE_SIZE  # 176
 
 # Tileset configuration - tiles arranged in grid
-const TILESET_COLUMNS := 63
-const TILESET_ROWS := 62
+const TILESET_COLUMNS := 16
+const TILESET_ROWS := 6
 
 # Transition settings
 const TRANSITION_SPEED := 200.0  # pixels per second
@@ -45,9 +45,9 @@ func setup_tileset() -> void:
 	tileset.tile_size = Vector2i(TILE_SIZE, TILE_SIZE)
 
 	# Load the tileset texture
-	var texture := load("res://assets/tileset.png") as Texture2D
+	var texture := load("res://assets/overworld_tileset.png") as Texture2D
 	if not texture:
-		push_error("Failed to load tileset.png")
+		push_error("Failed to load overworld_tileset.png")
 		return
 
 	# Create atlas source

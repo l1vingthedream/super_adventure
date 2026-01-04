@@ -5,11 +5,11 @@ A spiritual successor to the original Legend of Zelda, built with Godot 4.x.
 ---
 
 ## TODO: Tileset & Overworld Map Fix
-- [ ] Validate overworld_tileset.png contains all required unique tiles (179 tiles extracted)
-- [ ] Fix overworld map to use overworld_tileset.png instead of tileset.png
-- [ ] Update screen_manager.gd tileset configuration (TILESET_COLUMNS, TILESET_ROWS)
-- [ ] Regenerate overworld.json if needed to reference new tileset tile IDs
-- [ ] Remove green separator line artifacts from gameplay
+- [x] Validate overworld_tileset.png contains all required unique tiles (95 tiles extracted)
+- [x] Fix overworld map to use overworld_tileset.png instead of tileset.png
+- [x] Update screen_manager.gd tileset configuration (TILESET_COLUMNS, TILESET_ROWS)
+- [x] Regenerate overworld.json if needed to reference new tileset tile IDs
+- [x] Remove green separator line artifacts from gameplay
 
 ---
 
