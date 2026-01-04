@@ -2,15 +2,16 @@
 """
 Extract unique 16x16 tiles from the Legend of Zelda overworld map.
 
-Source: ~/Downloads/Overworld_Map.png (4111x1592px)
+Source: ~/Downloads/Overworld_Map.png (4111x1591px)
 - 16 screens wide x 9 screens tall
 - Each screen: 16 tiles wide x 11 tiles tall
 - Each tile: 16x16 pixels
-- 1px green separator between screens
+- 1px green separator between screens (no top/left border)
 """
 
 from PIL import Image
 import hashlib
+import json
 import os
 
 # Configuration
@@ -69,8 +70,10 @@ def main():
     print(f"Image size: {img.width}x{img.height}")
 
     # Verify dimensions
+    # Width: 16 screens + 15 separators between them
+    # Height: 9 screens + 8 separators, but last separator missing = 7 separators
     expected_width = SCREENS_X * SCREEN_WIDTH_PX + (SCREENS_X - 1) * SEPARATOR_WIDTH
-    expected_height = SCREENS_Y * SCREEN_HEIGHT_PX + (SCREENS_Y - 1) * SEPARATOR_WIDTH
+    expected_height = SCREENS_Y * SCREEN_HEIGHT_PX + (SCREENS_Y - 2) * SEPARATOR_WIDTH
     print(f"Expected size: {expected_width}x{expected_height}")
 
     if img.width != expected_width or img.height != expected_height:
@@ -78,6 +81,7 @@ def main():
 
     # Extract all tiles and deduplicate
     unique_tiles = {}  # hash -> tile image
+    tile_counts = {}   # hash -> reference count
     tile_order = []    # preserve first occurrence order
 
     total_tiles = SCREENS_X * SCREENS_Y * SCREEN_TILES_X * SCREEN_TILES_Y
@@ -94,8 +98,10 @@ def main():
 
                     if h not in unique_tiles:
                         unique_tiles[h] = tile
+                        tile_counts[h] = 0
                         tile_order.append(h)
 
+                    tile_counts[h] += 1
                     processed += 1
 
     print(f"Processed {processed} tiles")
@@ -120,6 +126,42 @@ def main():
 
     output_img.save(output_path)
     print(f"\nSaved tileset to: {output_path}")
+
+    # Generate metadata with reference counts
+    metadata_path = os.path.join(home, "devprojects", "super_adventure", "assets", "overworld_tileset_metadata.json")
+
+    tiles_metadata = []
+    for i, h in enumerate(tile_order):
+        tiles_metadata.append({
+            "id": i,
+            "row": i // OUTPUT_TILES_PER_ROW,
+            "col": i % OUTPUT_TILES_PER_ROW,
+            "count": tile_counts[h]
+        })
+
+    metadata = {
+        "total_tiles": len(unique_tiles),
+        "total_references": processed,
+        "tileset_columns": OUTPUT_TILES_PER_ROW,
+        "tileset_rows": rows,
+        "tiles": tiles_metadata
+    }
+
+    with open(metadata_path, "w") as f:
+        json.dump(metadata, f, indent=2)
+
+    print(f"Saved metadata to: {metadata_path}")
+
+    # Print summary
+    sorted_by_count = sorted(tiles_metadata, key=lambda t: t["count"], reverse=True)
+
+    print(f"\nTop 10 most used tiles:")
+    for t in sorted_by_count[:10]:
+        print(f"  Tile {t['id']:3d} (row {t['row']}, col {t['col']}): {t['count']} references")
+
+    print(f"\nTop 10 least used tiles:")
+    for t in sorted_by_count[-10:]:
+        print(f"  Tile {t['id']:3d} (row {t['row']}, col {t['col']}): {t['count']} references")
 
 
 if __name__ == "__main__":
