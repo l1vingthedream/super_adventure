@@ -14,8 +14,9 @@ A spiritual successor to the original Legend of Zelda, built with Godot 4.x.
 ---
 
 ## TODO: Attack Animation Fix
-- [ ] Test subpixel snapping fix for sword sprite (rightmost pixel was being clipped on right attack)
-- [ ] Verify all 4 attack directions render correctly after fix
+- [x] Fix up attack sword sprite positioning (all frames shifted 1px left, frame 3 adjusted)
+- [x] Fix down attack sword sprite positioning (all frames shifted 1px left, frame 3 adjusted)
+- [ ] Fix left/right attack sword sprite positioning
 
 ---
 

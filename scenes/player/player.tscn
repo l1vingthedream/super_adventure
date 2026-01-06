@@ -105,7 +105,7 @@ region = Rect2(21, 97, 8, 12)
 
 [sub_resource type="AtlasTexture" id="sword_up_2"]
 atlas = ExtResource("1_sprites")
-region = Rect2(38, 98, 8, 11)
+region = Rect2(38, 98, 8, 12)
 
 [sub_resource type="AtlasTexture" id="sword_up_3"]
 atlas = ExtResource("1_sprites")

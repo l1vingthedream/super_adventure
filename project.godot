@@ -22,6 +22,11 @@ window/size/window_width_override=768
 window/size/window_height_override=528
 window/stretch/mode="viewport"
 
+[editor]
+
+movie_writer/movie_file="/Users/michaelbegic/devprojects/super_adventure/recordings/recording.avi"
+movie_writer/fps=120
+
 [input]
 
 move_up={

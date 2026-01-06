@@ -1,6 +1,10 @@
 extends CharacterBody2D
 ## Player character with 4-directional movement and sword attack.
 
+# Debug settings
+const DEBUG_SLOW_MOTION := true  # Set to false to disable slow motion
+const DEBUG_TIME_SCALE := 0.05    # Game speed when slow motion is enabled
+
 # Movement speed matching NES Zelda feel
 const MOVE_SPEED := 90.0  # pixels per second
 
@@ -21,6 +25,9 @@ var is_attacking := false
 
 
 func _ready() -> void:
+	if DEBUG_SLOW_MOTION:
+		Engine.time_scale = DEBUG_TIME_SCALE
+
 	sprite.animation_finished.connect(_on_animation_finished)
 	sprite.frame_changed.connect(_on_frame_changed)
 	update_animation()
@@ -185,20 +192,22 @@ func update_sword_position(sword_frame: int) -> void:
 	var sword_anim: String
 
 	# Sword Y positions per frame (calculated from sprite heights)
-	var down_sword_y := [14, 12, 10]  # Top aligned with player bottom (y=8)
-	var up_sword_y := [-14, -14, -10]  # Bottom aligned with player top (y=-8)
+	var down_sword_y := [14, 12, 9]  # Top aligned with player bottom (y=8)
+	var up_sword_y := [-14, -14, -9]  # Bottom aligned with player top (y=-8)
 
 	match facing:
 		Direction.DOWN:
 			sword_anim = "sword_down"
 			sword_sprite.flip_h = false
-			# Position below player, x=2, y varies per frame to keep top at player feet
-			sword.position = Vector2(2, down_sword_y[sword_frame])
+			# Position below player, y varies per frame to keep top at player feet
+			var down_sword_x := [1, 1, 1]  # All frames shifted 1px left from original x=2
+			sword.position = Vector2(down_sword_x[sword_frame], down_sword_y[sword_frame])
 		Direction.UP:
 			sword_anim = "sword_up"
 			sword_sprite.flip_h = false
-			# Position above player, x=0, y varies per frame to keep bottom at player head
-			sword.position = Vector2(0, up_sword_y[sword_frame])
+			# Position above player, y varies per frame to keep bottom at player head
+			var up_sword_x := [-1, -1, -1]  # All frames shifted 1px left
+			sword.position = Vector2(up_sword_x[sword_frame], up_sword_y[sword_frame])
 		Direction.LEFT:
 			sword_anim = "sword_side"
 			sword_sprite.flip_h = true
