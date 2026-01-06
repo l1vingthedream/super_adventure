@@ -16,7 +16,7 @@ A spiritual successor to the original Legend of Zelda, built with Godot 4.x.
 ## TODO: Attack Animation Fix
 - [x] Fix up attack sword sprite positioning (all frames shifted 1px left, frame 3 adjusted)
 - [x] Fix down attack sword sprite positioning (all frames shifted 1px left, frame 3 adjusted)
-- [ ] Fix left/right attack sword sprite positioning
+- [x] Fix left/right attack sword sprite positioning
 
 ---
 
@@ -26,7 +26,7 @@ A spiritual successor to the original Legend of Zelda, built with Godot 4.x.
 - [x] Create Player scene with AnimatedSprite2D
 - [x] 4-directional movement (up, down, left, right)
 - [x] Sprite animations: idle, walk (4 directions each)
-- [ ] Sprite animations: attack (4 directions)
+- [x] Sprite animations: attack (4 directions)
 - [x] Player collision shape (hitbox)
 - [x] Movement speed matching NES Zelda feel (~90 pixels/sec)
 

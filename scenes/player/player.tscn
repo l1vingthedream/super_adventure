@@ -53,11 +53,11 @@ region = Rect2(18, 77, 16, 16)
 
 [sub_resource type="AtlasTexture" id="attack_right_3"]
 atlas = ExtResource("1_sprites")
-region = Rect2(35, 77, 16, 16)
+region = Rect2(46, 77, 16, 16)
 
 [sub_resource type="AtlasTexture" id="attack_right_4"]
 atlas = ExtResource("1_sprites")
-region = Rect2(52, 77, 16, 16)
+region = Rect2(70, 77, 16, 16)
 
 [sub_resource type="AtlasTexture" id="attack_up_1"]
 atlas = ExtResource("1_sprites")
@@ -93,11 +93,11 @@ region = Rect2(34, 78, 11, 16)
 
 [sub_resource type="AtlasTexture" id="sword_right_2"]
 atlas = ExtResource("1_sprites")
-region = Rect2(51, 78, 7, 16)
+region = Rect2(62, 78, 7, 16)
 
 [sub_resource type="AtlasTexture" id="sword_right_3"]
 atlas = ExtResource("1_sprites")
-region = Rect2(68, 78, 3, 16)
+region = Rect2(86, 78, 3, 16)
 
 [sub_resource type="AtlasTexture" id="sword_up_1"]
 atlas = ExtResource("1_sprites")
@@ -290,6 +290,7 @@ collision_layer = 2
 collision_mask = 4
 
 [node name="SwordSprite" type="AnimatedSprite2D" parent="Sword"]
+centered = false
 sprite_frames = SubResource("SpriteFrames_sword")
 animation = &"sword_down"
 

@@ -2,8 +2,8 @@ extends CharacterBody2D
 ## Player character with 4-directional movement and sword attack.
 
 # Debug settings
-const DEBUG_SLOW_MOTION := true  # Set to false to disable slow motion
-const DEBUG_TIME_SCALE := 0.05    # Game speed when slow motion is enabled
+const DEBUG_SLOW_MOTION := false  # Set to false to disable slow motion
+const DEBUG_TIME_SCALE := 0.1    # Game speed when slow motion is enabled
 
 # Movement speed matching NES Zelda feel
 const MOVE_SPEED := 90.0  # pixels per second
@@ -22,6 +22,7 @@ var facing := Direction.DOWN
 # State
 var is_moving := false
 var is_attacking := false
+var subpixel_position := Vector2.ZERO  # Tracks true position for physics
 
 
 func _ready() -> void:
@@ -34,11 +35,16 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	# Restore true subpixel position for physics calculations
+	if subpixel_position != Vector2.ZERO:
+		global_position = subpixel_position
+
 	# Lock input during screen transitions
 	if screen_manager.is_transitioning:
 		velocity = Vector2.ZERO
 		is_moving = false
 		update_animation()
+		_snap_to_pixel()
 		return
 
 	# Handle attack input
@@ -49,6 +55,7 @@ func _physics_process(_delta: float) -> void:
 	if is_attacking:
 		velocity = Vector2.ZERO
 		move_and_slide()
+		_snap_to_pixel()
 		return
 
 	var input_dir := get_input_direction()
@@ -71,9 +78,13 @@ func _physics_process(_delta: float) -> void:
 	# Check for screen edge crossing
 	check_screen_transition(old_screen)
 
-	# Snap sprite visually using offset to prevent subpixel rendering artifacts
-	var subpixel := global_position - global_position.floor()
-	sprite.offset = -subpixel
+	_snap_to_pixel()
+
+
+func _snap_to_pixel() -> void:
+	# Store true position for physics, snap for rendering (NES-style)
+	subpixel_position = global_position
+	global_position = global_position.round()
 
 
 func get_input_direction() -> Vector2:
@@ -191,41 +202,40 @@ func _on_frame_changed() -> void:
 func update_sword_position(sword_frame: int) -> void:
 	var sword_anim: String
 
-	# Sword Y positions per frame (calculated from sprite heights)
-	var down_sword_y := [14, 12, 9]  # Top aligned with player bottom (y=8)
-	var up_sword_y := [-14, -14, -9]  # Bottom aligned with player top (y=-8)
+	# Positions calculated for centered=false (top-left origin)
+	# Formula: new_pos = old_centered_pos - (width/2, height/2)
 
 	match facing:
 		Direction.DOWN:
 			sword_anim = "sword_down"
 			sword_sprite.flip_h = false
-			# Position below player, y varies per frame to keep top at player feet
-			var down_sword_x := [1, 1, 1]  # All frames shifted 1px left from original x=2
+			# Sprite sizes: 8x11, 8x7, 8x3
+			var down_sword_x := [-3, -3, -3]
+			var down_sword_y := [8, 8, 7]
 			sword.position = Vector2(down_sword_x[sword_frame], down_sword_y[sword_frame])
 		Direction.UP:
 			sword_anim = "sword_up"
 			sword_sprite.flip_h = false
-			# Position above player, y varies per frame to keep bottom at player head
-			var up_sword_x := [-1, -1, -1]  # All frames shifted 1px left
+			# Sprite sizes: 8x12, 8x12, 8x3
+			var up_sword_x := [-5, -5, -5]
+			var up_sword_y := [-20, -20, -11]
 			sword.position = Vector2(up_sword_x[sword_frame], up_sword_y[sword_frame])
 		Direction.LEFT:
 			sword_anim = "sword_side"
 			sword_sprite.flip_h = true
-			# Position left of player
-			sword.position = Vector2(-14, 1)
+			# Sprite sizes: 11x16, 7x16, 3x16 (flip_h extends left from position)
+			var left_sword_x := [-19, -15, -11]  # -8 - width for each frame
+			sword.position = Vector2(left_sword_x[sword_frame], -7)
 		Direction.RIGHT:
 			sword_anim = "sword_side"
 			sword_sprite.flip_h = false
-			# Position right of player
-			sword.position = Vector2(14, 1)
+			# Sprite sizes: 11x16, 7x16, 3x16
+			var right_sword_x := [8, 8, 8]
+			sword.position = Vector2(right_sword_x[sword_frame], -7)
 
 	if sword_sprite.sprite_frames and sword_sprite.sprite_frames.has_animation(sword_anim):
 		sword_sprite.animation = sword_anim
 		sword_sprite.frame = sword_frame
-
-	# Apply subpixel snapping to sword sprite (same as player sprite)
-	var sword_subpixel := sword.global_position - sword.global_position.floor()
-	sword_sprite.offset = -sword_subpixel
 
 
 func check_screen_transition(old_screen: Vector2i) -> void:
