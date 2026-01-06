@@ -38,10 +38,10 @@ A spiritual successor to the original Legend of Zelda, built with Godot 4.x.
 - [x] Screen boundary collision (prevent walking off-map)
 
 ### 1.3 Collision System
-- [ ] Implement tile-based collision from tilemap
-- [ ] Mark solid tiles (rocks, water, walls, trees)
-- [ ] Create collision layer in TileSet
-- [ ] Player-to-tile collision detection
+- [x] Implement tile-based collision from tilemap
+- [x] Mark solid tiles (rocks, water, walls, trees)
+- [x] Create collision layer in TileSet
+- [x] Player-to-tile collision detection
 
 ---
 

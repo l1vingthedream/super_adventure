@@ -1,0 +1,5 @@
+{
+  "description": "Collision data for overworld tileset - defines which tiles are walkable vs solid",
+  "tile_count": 96,
+  "walkable_tiles": [1, 2, 8, 19, 20, 41, 51, 58, 60, 65, 83, 85, 87, 88, 89, 93, 94, 95]
+}

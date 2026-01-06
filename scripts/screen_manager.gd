@@ -31,18 +31,52 @@ var transition_direction := Vector2i.ZERO
 var transitioning_player: CharacterBody2D = null
 var player_transition_offset := Vector2.ZERO  # Offset from camera center during transition
 
+# Collision data
+var walkable_tiles: Array = []  # Tile IDs that player can walk through
+
 
 func _ready() -> void:
+	load_collision_data()
 	setup_tileset()
 	load_tilemap_data()
 	populate_tilemap()
 	center_camera_on_screen(current_screen)
 
 
+func load_collision_data() -> void:
+	## Load tile collision definitions from JSON
+	var file := FileAccess.open("res://assets/tile_collision_data.json", FileAccess.READ)
+	if not file:
+		push_warning("No collision data file found - all tiles will be walkable")
+		return
+
+	var json_text := file.get_as_text()
+	file.close()
+
+	var json := JSON.new()
+	var error := json.parse(json_text)
+	if error != OK:
+		push_error("Failed to parse tile_collision_data.json: " + json.get_error_message())
+		return
+
+	var data: Dictionary = json.data
+	var raw_tiles: Array = data.get("walkable_tiles", [])
+	# Convert to integers (JSON parses numbers as floats)
+	walkable_tiles = []
+	for tile in raw_tiles:
+		walkable_tiles.append(int(tile))
+	print("Loaded collision data: %d walkable tiles defined" % walkable_tiles.size())
+
+
 func setup_tileset() -> void:
 	## Create the TileSet programmatically with all tiles defined
 	var tileset := TileSet.new()
 	tileset.tile_size = Vector2i(TILE_SIZE, TILE_SIZE)
+
+	# Add physics layer for tile collisions (layer 1 = world)
+	tileset.add_physics_layer(0)
+	tileset.set_physics_layer_collision_layer(0, 1)  # Tiles are on layer 1
+	tileset.set_physics_layer_collision_mask(0, 0)   # Tiles don't detect others
 
 	# Load the tileset texture
 	var texture := load("res://assets/overworld_tileset.png") as Texture2D
@@ -55,18 +89,47 @@ func setup_tileset() -> void:
 	atlas.texture = texture
 	atlas.texture_region_size = Vector2i(TILE_SIZE, TILE_SIZE)
 
-	# Create a tile for each position in the atlas
+	# Create all tiles first
+	for y in range(TILESET_ROWS):
+		for x in range(TILESET_COLUMNS):
+			atlas.create_tile(Vector2i(x, y))
+
+	# Add atlas to tileset BEFORE setting collision data
+	tileset.add_source(atlas, 0)
+
+	# Assign tileset to tilemap
+	tilemap.tile_set = tileset
+
+	# NOW add collision shapes (after tileset is assigned)
+	var solid_count := 0
 	for y in range(TILESET_ROWS):
 		for x in range(TILESET_COLUMNS):
 			var coords := Vector2i(x, y)
-			atlas.create_tile(coords)
+			var tile_id: int = y * TILESET_COLUMNS + x
 
-	# Add atlas to tileset
-	tileset.add_source(atlas, 0)
+			# Add collision to non-walkable tiles
+			if tile_id not in walkable_tiles:
+				var tile_data := atlas.get_tile_data(coords, 0)
+				if tile_data:
+					_add_full_tile_collision(tile_data)
+					solid_count += 1
 
-	# Assign to tilemap
-	tilemap.tile_set = tileset
-	print("TileSet created with %d tiles" % (TILESET_COLUMNS * TILESET_ROWS))
+	print("TileSet created with %d tiles (%d solid, %d walkable)" % [TILESET_COLUMNS * TILESET_ROWS, solid_count, walkable_tiles.size()])
+	print("Walkable tile IDs: ", walkable_tiles)
+
+
+func _add_full_tile_collision(tile_data: TileData) -> void:
+	## Add a full-tile collision polygon to the given tile
+	## Coordinates are relative to tile center (half tile size offset)
+	var half := TILE_SIZE / 2.0
+	var collision_polygon := PackedVector2Array([
+		Vector2(-half, -half),
+		Vector2(half, -half),
+		Vector2(half, half),
+		Vector2(-half, half)
+	])
+	tile_data.set_collision_polygons_count(0, 1)
+	tile_data.set_collision_polygon_points(0, 0, collision_polygon)
 
 
 func load_tilemap_data() -> void:
