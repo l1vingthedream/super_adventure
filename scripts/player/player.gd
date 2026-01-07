@@ -8,6 +8,9 @@ const DEBUG_TIME_SCALE := 0.1    # Game speed when slow motion is enabled
 # Movement speed matching NES Zelda feel
 const MOVE_SPEED := 90.0  # pixels per second
 
+# Attack cooldown duration (NES Zelda feel)
+const ATTACK_COOLDOWN_DURATION := 0.15  # seconds
+
 # Current facing direction for animations
 enum Direction { DOWN, UP, LEFT, RIGHT }
 var facing := Direction.DOWN
@@ -22,6 +25,7 @@ var facing := Direction.DOWN
 # State
 var is_moving := false
 var is_attacking := false
+var attack_cooldown := 0.0  # Time remaining before next attack allowed
 var subpixel_position := Vector2.ZERO  # Tracks true position for physics
 
 
@@ -34,10 +38,14 @@ func _ready() -> void:
 	update_animation()
 
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	# Restore true subpixel position for physics calculations
 	if subpixel_position != Vector2.ZERO:
 		global_position = subpixel_position
+
+	# Update attack cooldown
+	if attack_cooldown > 0:
+		attack_cooldown -= delta
 
 	# Lock input during screen transitions
 	if screen_manager.is_transitioning:
@@ -47,8 +55,8 @@ func _physics_process(_delta: float) -> void:
 		_snap_to_pixel()
 		return
 
-	# Handle attack input
-	if Input.is_action_just_pressed("attack") and not is_attacking:
+	# Handle attack input (requires cooldown to be finished)
+	if Input.is_action_just_pressed("attack") and not is_attacking and attack_cooldown <= 0:
 		start_attack()
 
 	# Don't allow movement during attack
@@ -178,6 +186,7 @@ func _on_animation_finished() -> void:
 
 func end_attack() -> void:
 	is_attacking = false
+	attack_cooldown = ATTACK_COOLDOWN_DURATION
 	sword.visible = false
 	sword_hitbox.disabled = true
 	update_animation()
@@ -270,3 +279,11 @@ func clamp_to_screen(screen: Vector2i) -> void:
 
 	global_position.x = clampf(global_position.x, screen_left + margin, screen_right - margin)
 	global_position.y = clampf(global_position.y, screen_top + margin, screen_bottom - margin)
+
+
+func _on_sword_area_entered(area: Area2D) -> void:
+	## Handle sword collision with enemies
+	if area.is_in_group("enemies"):
+		var enemy = area.get_parent()
+		if enemy.has_method("take_damage"):
+			enemy.take_damage(1)

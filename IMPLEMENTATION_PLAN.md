@@ -48,11 +48,11 @@ A spiritual successor to the original Legend of Zelda, built with Godot 4.x.
 ## Phase 2: Combat Foundation
 
 ### 2.1 Basic Sword Attack
-- [ ] Sword hitbox (appears in front of player)
-- [ ] Attack animation (sword swing)
-- [ ] Attack cooldown timer
-- [ ] Input handling (action button)
-- [ ] Sword collision detection
+- [x] Sword hitbox (appears in front of player)
+- [x] Attack animation (sword thrust - NES style)
+- [x] Attack cooldown timer
+- [x] Input handling (action button)
+- [x] Sword collision detection
 
 ### 2.2 Health System
 - [ ] Player health (hearts) - start with 3
@@ -68,6 +68,10 @@ A spiritual successor to the original Legend of Zelda, built with Godot 4.x.
 - [ ] Enemy-to-player collision (contact damage)
 - [ ] Enemy death (disappear + drop)
 - [ ] Enemy spawning per screen
+
+**Note:** For sword collision detection (from Phase 2.1), enemies must:
+1. Have their Area2D node in the "enemies" group
+2. Implement a `take_damage(amount: int)` method
 
 ---
 

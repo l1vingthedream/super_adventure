@@ -299,3 +299,5 @@ animation = &"sword_down"
 [node name="SwordHitbox" type="CollisionShape2D" parent="Sword"]
 shape = SubResource("sword_collision")
 disabled = true
+
+[connection signal="area_entered" from="Sword" to="." method="_on_sword_area_entered"]
