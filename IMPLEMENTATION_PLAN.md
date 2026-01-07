@@ -55,11 +55,11 @@ A spiritual successor to the original Legend of Zelda, built with Godot 4.x.
 - [x] Sword collision detection
 
 ### 2.2 Health System
-- [ ] Player health (hearts) - start with 3
-- [ ] Damage and invincibility frames
-- [ ] Visual feedback (flash on damage)
-- [ ] Death state and respawn logic
-- [ ] Knockback on hit
+- [x] Player health (hearts) - start with 3
+- [x] Damage and invincibility frames (1 second)
+- [x] Visual feedback (NES-style palette cycling shader)
+- [x] Death state and spin animation (2 seconds)
+- [x] Knockback on hit
 
 ### 2.3 Basic Enemy
 - [ ] Create Enemy base class

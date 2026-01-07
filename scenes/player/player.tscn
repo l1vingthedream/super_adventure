@@ -1,7 +1,8 @@
-[gd_scene load_steps=36 format=3]
+[gd_scene load_steps=38 format=3]
 
 [ext_resource type="Texture2D" uid="uid://m28q3j5botps" path="res://assets/Player_Sprites.png" id="1_sprites"]
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="2_script"]
+[ext_resource type="Shader" path="res://assets/shaders/palette_swap.gdshader" id="3_shader"]
 
 [sub_resource type="AtlasTexture" id="walk_down_1"]
 atlas = ExtResource("1_sprites")
@@ -273,12 +274,17 @@ size = Vector2(12, 12)
 [sub_resource type="RectangleShape2D" id="sword_collision"]
 size = Vector2(8, 12)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_palette"]
+shader = ExtResource("3_shader")
+shader_parameter/palette_frame = 0
+
 [node name="Player" type="CharacterBody2D"]
 collision_layer = 2
 collision_mask = 1
 script = ExtResource("2_script")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+material = SubResource("ShaderMaterial_palette")
 sprite_frames = SubResource("SpriteFrames_player")
 animation = &"idle_down"
 

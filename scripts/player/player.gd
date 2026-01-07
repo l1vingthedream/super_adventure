@@ -1,6 +1,10 @@
 extends CharacterBody2D
 ## Player character with 4-directional movement and sword attack.
 
+# Health signals for HUD integration
+signal health_changed(current: int, maximum: int)
+signal player_died
+
 # Debug settings
 const DEBUG_SLOW_MOTION := false  # Set to false to disable slow motion
 const DEBUG_TIME_SCALE := 0.1    # Game speed when slow motion is enabled
@@ -10,6 +14,16 @@ const MOVE_SPEED := 90.0  # pixels per second
 
 # Attack cooldown duration (NES Zelda feel)
 const ATTACK_COOLDOWN_DURATION := 0.15  # seconds
+
+# Health system constants
+const INVINCIBILITY_DURATION := 1.0  # seconds of invincibility after hit
+const KNOCKBACK_SPEED := 150.0  # pixels/sec
+const KNOCKBACK_DECELERATION := 600.0  # pixels/sec²
+const PALETTE_CYCLE_SPEED := 10.0  # palette frames per second
+
+# Death animation constants
+const DEATH_SPIN_DURATION := 2.0  # seconds
+const DEATH_SPIN_SPEED := 12.0  # frames per second (rapid spin)
 
 # Current facing direction for animations
 enum Direction { DOWN, UP, LEFT, RIGHT }
@@ -28,6 +42,19 @@ var is_attacking := false
 var attack_cooldown := 0.0  # Time remaining before next attack allowed
 var subpixel_position := Vector2.ZERO  # Tracks true position for physics
 
+# Health state
+var health := 3
+var max_health := 3
+var invincibility_timer := 0.0
+var knockback_velocity := Vector2.ZERO
+var is_dead := false
+var palette_frame := 0  # 0-3 for shader (0 = normal)
+
+# Death animation state
+var death_spin_timer := 0.0
+var death_frame_timer := 0.0
+var death_frame_index := 0  # 0-3 for down/right/up/left
+
 
 func _ready() -> void:
 	if DEBUG_SLOW_MOTION:
@@ -42,6 +69,32 @@ func _physics_process(delta: float) -> void:
 	# Restore true subpixel position for physics calculations
 	if subpixel_position != Vector2.ZERO:
 		global_position = subpixel_position
+
+	# Handle death state (spin animation)
+	if is_dead:
+		_process_death_animation(delta)
+		return
+
+	# Handle invincibility and palette cycling
+	if invincibility_timer > 0:
+		invincibility_timer -= delta
+		# Cycle through palette frames 1-3 (skip 0 which is normal)
+		palette_frame = 1 + int(invincibility_timer * PALETTE_CYCLE_SPEED) % 3
+		sprite.material.set_shader_parameter("palette_frame", palette_frame)
+
+		if invincibility_timer <= 0:
+			palette_frame = 0
+			sprite.material.set_shader_parameter("palette_frame", 0)
+
+	# Apply knockback velocity
+	if knockback_velocity != Vector2.ZERO:
+		velocity = knockback_velocity
+		knockback_velocity = knockback_velocity.move_toward(Vector2.ZERO, KNOCKBACK_DECELERATION * delta)
+		move_and_slide()
+		_snap_to_pixel()
+		# Don't process normal input while being knocked back
+		if knockback_velocity.length() > 10.0:
+			return
 
 	# Update attack cooldown
 	if attack_cooldown > 0:
@@ -287,3 +340,87 @@ func _on_sword_area_entered(area: Area2D) -> void:
 		var enemy = area.get_parent()
 		if enemy.has_method("take_damage"):
 			enemy.take_damage(1)
+
+
+# =============================================================================
+# Health System
+# =============================================================================
+
+func take_damage(amount: int, from_position: Vector2) -> void:
+	## Apply damage to player, trigger invincibility and knockback
+	if is_dead or invincibility_timer > 0:
+		return
+
+	health -= amount
+	health = max(health, 0)
+	health_changed.emit(health, max_health)
+
+	# Start invincibility
+	invincibility_timer = INVINCIBILITY_DURATION
+
+	# Calculate knockback direction (away from damage source)
+	var knockback_dir := (global_position - from_position).normalized()
+	knockback_velocity = knockback_dir * KNOCKBACK_SPEED
+
+	if health <= 0:
+		die()
+
+
+func die() -> void:
+	## Trigger death state and start spin animation
+	is_dead = true
+	is_attacking = false
+	is_moving = false
+	velocity = Vector2.ZERO
+	knockback_velocity = Vector2.ZERO
+
+	# Start death spin animation
+	death_spin_timer = DEATH_SPIN_DURATION
+	death_frame_timer = 0.0
+	death_frame_index = 0
+	_update_death_frame()
+
+
+func _process_death_animation(delta: float) -> void:
+	## Handle death spin animation each frame
+	if death_spin_timer > 0:
+		death_spin_timer -= delta
+		death_frame_timer += delta
+
+		# Continue palette cycling during death
+		palette_frame = 1 + int(death_spin_timer * PALETTE_CYCLE_SPEED) % 3
+		sprite.material.set_shader_parameter("palette_frame", palette_frame)
+
+		# Cycle through death frames at DEATH_SPIN_SPEED
+		if death_frame_timer >= 1.0 / DEATH_SPIN_SPEED:
+			death_frame_timer = 0.0
+			death_frame_index = (death_frame_index + 1) % 4
+			_update_death_frame()
+
+		if death_spin_timer <= 0:
+			player_died.emit()  # Signal after animation completes
+
+	velocity = Vector2.ZERO
+	move_and_slide()
+	_snap_to_pixel()
+
+
+func _update_death_frame() -> void:
+	## Update sprite for death spin: down → right → up → left (flipped right)
+	match death_frame_index:
+		0:  # Down
+			sprite.animation = "walk_down"
+			sprite.frame = 0
+			sprite.flip_h = false
+		1:  # Right
+			sprite.animation = "walk_side"
+			sprite.frame = 0
+			sprite.flip_h = false
+		2:  # Up
+			sprite.animation = "walk_up"
+			sprite.frame = 0
+			sprite.flip_h = false
+		3:  # Left (right flipped)
+			sprite.animation = "walk_side"
+			sprite.frame = 0
+			sprite.flip_h = true
