@@ -32,3 +32,6 @@ Thumbs.db
 # Python
 __pycache__/
 *.pyc
+
+# Local notes (never push)
+github_push_issues.md
