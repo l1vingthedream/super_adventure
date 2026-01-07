@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/adventure_enemies.png" id="1_enemies"]
+[ext_resource type="Script" path="res://scripts/enemies/octorok_projectile.gd" id="2_script"]
+
+[sub_resource type="AtlasTexture" id="octorok_shot"]
+atlas = ExtResource("1_enemies")
+region = Rect2(69, 11, 8, 16)
+
+[sub_resource type="CircleShape2D" id="collision_shape"]
+radius = 4.0
+
+[node name="OctorokProjectile" type="Area2D"]
+collision_layer = 8
+collision_mask = 2
+script = ExtResource("2_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("octorok_shot")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("collision_shape")

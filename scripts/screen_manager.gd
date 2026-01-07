@@ -34,6 +34,9 @@ var player_transition_offset := Vector2.ZERO  # Offset from camera center during
 # Collision data
 var walkable_tiles: Array = []  # Tile IDs that player can walk through
 
+# Enemy spawning
+var enemies_container: Node2D
+
 
 func _ready() -> void:
 	load_collision_data()
@@ -41,6 +44,14 @@ func _ready() -> void:
 	load_tilemap_data()
 	populate_tilemap()
 	center_camera_on_screen(current_screen)
+
+	# Create container for enemies
+	enemies_container = Node2D.new()
+	enemies_container.name = "Enemies"
+	add_child(enemies_container)
+
+	# Spawn enemies for starting screen
+	_spawn_enemies_for_screen(current_screen)
 
 
 func load_collision_data() -> void:
@@ -284,6 +295,8 @@ func _process(delta: float) -> void:
 				transitioning_player = null
 			is_transitioning = false
 			transition_direction = Vector2i.ZERO
+			# Spawn enemies for new screen
+			_spawn_enemies_for_screen(current_screen)
 		else:
 			camera.position += direction * move_amount
 			# Move player along with camera
@@ -293,3 +306,38 @@ func _process(delta: float) -> void:
 
 # Debug controls removed - player movement now handles screen transitions
 # To manually test transitions, use: transition_to_screen(Vector2i(x, y))
+
+
+# =============================================================================
+# Enemy Spawning
+# =============================================================================
+
+func _spawn_enemies_for_screen(screen: Vector2i) -> void:
+	## Clear existing enemies and spawn new ones for the given screen
+	_clear_enemies()
+
+	# Calculate screen bounds for spawning
+	var screen_left := screen.x * SCREEN_WIDTH_PX
+	var screen_top := screen.y * SCREEN_HEIGHT_PX
+
+	# For testing, spawn Octorok on screen (7, 6) - one screen up from start
+	if screen == Vector2i(7, 6):
+		_spawn_octorok(Vector2(screen_left + 128, screen_top + 88))
+
+	# Spawn two Octoroks on screen (7, 5) - two screens up from start
+	if screen == Vector2i(7, 5):
+		_spawn_octorok(Vector2(screen_left + 80, screen_top + 60))
+		_spawn_octorok(Vector2(screen_left + 176, screen_top + 100))
+
+
+func _spawn_octorok(pos: Vector2) -> void:
+	## Spawn an Octorok at the given position
+	var octorok = preload("res://scenes/enemies/octorok.tscn").instantiate()
+	octorok.global_position = pos
+	enemies_container.add_child(octorok)
+
+
+func _clear_enemies() -> void:
+	## Remove all enemies from the current screen
+	for child in enemies_container.get_children():
+		child.queue_free()

@@ -62,16 +62,32 @@ A spiritual successor to the original Legend of Zelda, built with Godot 4.x.
 - [x] Knockback on hit
 
 ### 2.3 Basic Enemy
-- [ ] Create Enemy base class
-- [ ] Simple enemy: Octorok-style (moves, shoots projectile)
-- [ ] Enemy health and damage values
-- [ ] Enemy-to-player collision (contact damage)
-- [ ] Enemy death (disappear + drop)
-- [ ] Enemy spawning per screen
+- [x] Create Enemy base class (Octorok as first enemy)
+- [x] Simple enemy: Octorok-style (moves, shoots projectile)
+- [x] Enemy health and damage values (2 HP, 1 damage)
+- [x] Enemy-to-player collision (contact damage + projectiles)
+- [x] Enemy death (disappear on 0 HP)
+- [x] Enemy spawning per screen (screen_manager.gd)
 
 **Note:** For sword collision detection (from Phase 2.1), enemies must:
 1. Have their Area2D node in the "enemies" group
 2. Implement a `take_damage(amount: int)` method
+
+### 2.4 Enemy Damage & Death Animation
+- [x] Create enemy palette swap shader (enemy_palette_swap.gdshader)
+- [x] Add damage flash to Octorok (0.3s palette cycling on hit)
+- [x] Create universal enemy death effect scene (enemy_death.tscn)
+- [x] Create enemy death script with auto-cleanup (enemy_death.gd)
+- [x] Update Octorok to spawn death effect on death
+- [x] Apply shader material to Octorok sprite
+
+**Note:** The death effect is reusable by any enemy type. Usage:
+```gdscript
+var death_effect = preload("res://scenes/enemies/enemy_death.tscn").instantiate()
+death_effect.global_position = global_position
+get_parent().add_child(death_effect)
+queue_free()
+```
 
 ---
 
