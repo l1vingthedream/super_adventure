@@ -17,10 +17,14 @@ config/features=PackedStringArray("4.5", "Forward Plus")
 [display]
 
 window/size/viewport_width=256
-window/size/viewport_height=176
+window/size/viewport_height=232
 window/size/window_width_override=768
-window/size/window_height_override=528
+window/size/window_height_override=696
 window/stretch/mode="viewport"
+
+[autoload]
+
+GameManager="*res://scripts/autoload/game_manager.gd"
 
 [editor]
 

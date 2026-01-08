@@ -8,6 +8,7 @@ const SCREEN_WIDTH_TILES := 16
 const SCREEN_HEIGHT_TILES := 11
 const SCREEN_WIDTH_PX := SCREEN_WIDTH_TILES * TILE_SIZE  # 256
 const SCREEN_HEIGHT_PX := SCREEN_HEIGHT_TILES * TILE_SIZE  # 176
+const HUD_HEIGHT := 56  # Pixels reserved for HUD at top of screen
 
 # Tileset configuration - tiles arranged in grid
 const TILESET_COLUMNS := 16
@@ -37,6 +38,9 @@ var walkable_tiles: Array = []  # Tile IDs that player can walk through
 # Enemy spawning
 var enemies_container: Node2D
 
+# HUD reference
+var hud: CanvasLayer
+
 
 func _ready() -> void:
 	load_collision_data()
@@ -52,6 +56,9 @@ func _ready() -> void:
 
 	# Spawn enemies for starting screen
 	_spawn_enemies_for_screen(current_screen)
+
+	# Set up HUD connections after scene is ready
+	call_deferred("_setup_hud")
 
 
 func load_collision_data() -> void:
@@ -201,10 +208,11 @@ func populate_tilemap() -> void:
 
 
 func center_camera_on_screen(screen: Vector2i) -> void:
-	## Center the camera on a specific screen
+	## Center the camera on a specific screen (accounting for HUD offset)
+	# Camera Y is shifted up (negative) so game content appears below the HUD
 	camera.position = Vector2(
 		screen.x * SCREEN_WIDTH_PX + SCREEN_WIDTH_PX / 2.0,
-		screen.y * SCREEN_HEIGHT_PX + SCREEN_HEIGHT_PX / 2.0
+		screen.y * SCREEN_HEIGHT_PX + SCREEN_HEIGHT_PX / 2.0 - HUD_HEIGHT / 2.0
 	)
 
 
@@ -236,7 +244,7 @@ func start_player_transition(new_screen: Vector2i, direction: Vector2i, player: 
 
 	transition_target = Vector2(
 		new_screen.x * SCREEN_WIDTH_PX + SCREEN_WIDTH_PX / 2.0,
-		new_screen.y * SCREEN_HEIGHT_PX + SCREEN_HEIGHT_PX / 2.0
+		new_screen.y * SCREEN_HEIGHT_PX + SCREEN_HEIGHT_PX / 2.0 - HUD_HEIGHT / 2.0
 	)
 
 	# Reposition player to opposite edge of new screen
@@ -277,7 +285,7 @@ func transition_to_screen(new_screen: Vector2i) -> void:
 	current_screen = new_screen
 	transition_target = Vector2(
 		new_screen.x * SCREEN_WIDTH_PX + SCREEN_WIDTH_PX / 2.0,
-		new_screen.y * SCREEN_HEIGHT_PX + SCREEN_HEIGHT_PX / 2.0
+		new_screen.y * SCREEN_HEIGHT_PX + SCREEN_HEIGHT_PX / 2.0 - HUD_HEIGHT / 2.0
 	)
 
 
@@ -297,6 +305,9 @@ func _process(delta: float) -> void:
 			transition_direction = Vector2i.ZERO
 			# Spawn enemies for new screen
 			_spawn_enemies_for_screen(current_screen)
+			# Update HUD minimap
+			if hud:
+				hud.update_minimap(current_screen)
 		else:
 			camera.position += direction * move_amount
 			# Move player along with camera
@@ -341,3 +352,22 @@ func _clear_enemies() -> void:
 	## Remove all enemies from the current screen
 	for child in enemies_container.get_children():
 		child.queue_free()
+
+
+# =============================================================================
+# HUD Setup
+# =============================================================================
+
+func _setup_hud() -> void:
+	## Connect HUD to player and set initial state
+	hud = get_node_or_null("HUD")
+	if not hud:
+		return
+
+	# Connect to player for health updates
+	var player = get_node_or_null("Player")
+	if player:
+		hud.connect_to_player(player)
+
+	# Set initial minimap position
+	hud.update_minimap(current_screen)

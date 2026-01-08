@@ -94,11 +94,15 @@ queue_free()
 ## Phase 3: HUD & UI
 
 ### 3.1 Heads-Up Display
-- [ ] Health display (heart containers)
-- [ ] Rupee counter
-- [ ] Key counter
-- [ ] Current item slot (B button item)
-- [ ] Minimap showing current screen position
+- [x] Health display (heart containers)
+- [x] Rupee counter
+- [x] Key counter
+- [x] Current item slot (B button item)
+- [x] Minimap showing current screen position
+- [x] GameManager autoload for inventory state tracking
+
+**Known Bugs (TODO):**
+- [ ] Rupee/key/bomb counter text not visible in HUD - need to fix positioning or rendering
 
 ### 3.2 Pause Menu
 - [ ] Inventory grid display
