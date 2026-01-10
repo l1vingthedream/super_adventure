@@ -111,6 +111,7 @@ queue_free()
 - [x] Game over screen
 - [x] Title screen
 - [x] File select / save slots (SELECT mode working, REGISTER mode needs fixes)
+- [ ] TODO: Fix REGISTER mode - cursor positions, alphabet grid navigation, name entry display
 
 ---
 
