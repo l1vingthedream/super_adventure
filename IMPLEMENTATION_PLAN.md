@@ -102,9 +102,9 @@ queue_free()
 - [x] GameManager autoload for inventory state tracking
 
 ### 3.2 Pause Menu
-- [ ] Inventory grid display
-- [ ] Item selection for B slot
-- [ ] Collected items tracking
+- [x] Inventory grid display
+- [x] Item selection for B slot
+- [x] Collected items tracking
 - [ ] Dungeon map display (when acquired)
 
 ### 3.3 Screen Overlays
