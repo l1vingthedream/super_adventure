@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cvy6k2l4e1g3t"]
+
+[ext_resource type="Script" path="res://scripts/ui/game_over.gd" id="1_gameover"]
+
+[node name="GameOver" type="CanvasLayer"]
+layer = 50
+script = ExtResource("1_gameover")

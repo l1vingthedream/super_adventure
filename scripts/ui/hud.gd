@@ -27,7 +27,7 @@ const NUMBER_REGIONS := [
 ]
 const X_REGION := Rect2(519, 117, 8, 8)  # "X" prefix for counters
 
-# Item/weapon sprite regions (8x16 each)
+# Item/weapon sprite regions (8x16 each unless noted)
 const ITEM_REGIONS := {
 	"wooden_sword": Rect2(555, 137, 8, 16),
 	"white_sword": Rect2(564, 137, 8, 16),
@@ -35,15 +35,21 @@ const ITEM_REGIONS := {
 	"boomerang": Rect2(584, 137, 8, 16),
 	"magic_boomerang": Rect2(593, 137, 8, 16),
 	"bomb": Rect2(604, 137, 8, 16),
+	"bombs": Rect2(604, 137, 8, 16),  # Alias for bomb
 	"arrow": Rect2(615, 137, 8, 16),
 	"silver_arrow": Rect2(624, 137, 8, 16),
 	"bow": Rect2(633, 137, 8, 16),
 	"red_candle": Rect2(644, 137, 8, 16),
 	"blue_candle": Rect2(653, 137, 8, 16),
+	"candle": Rect2(653, 137, 8, 16),  # Default to blue candle
 	"magic_book": Rect2(538, 156, 8, 16),
 	"flute": Rect2(664, 137, 8, 16),
+	"recorder": Rect2(664, 137, 8, 16),  # Alias for flute
 	"food_bait": Rect2(675, 137, 8, 16),
+	"food": Rect2(675, 137, 8, 16),  # Alias for food_bait
 	"magic_wand": Rect2(715, 137, 8, 16),
+	"wand": Rect2(715, 137, 8, 16),  # Alias for magic_wand
+	"letter": Rect2(686, 137, 8, 16),
 }
 
 # Item slot positions (B = usable item, A = sword)

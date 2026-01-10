@@ -88,8 +88,11 @@ func _die() -> void:
 	var death_effect = preload("res://scenes/enemies/enemy_death.tscn").instantiate()
 	death_effect.global_position = global_position
 	get_parent().add_child(death_effect)
+
+	# Spawn random drop
+	DropSystem.spawn_drop(global_position, get_parent())
+
 	queue_free()
-	# TODO: Drop items
 
 
 func _pick_random_direction() -> void:

@@ -57,6 +57,8 @@ var death_frame_index := 0  # 0-3 for down/right/up/left
 
 
 func _ready() -> void:
+	add_to_group("player")
+
 	if DEBUG_SLOW_MOTION:
 		Engine.time_scale = DEBUG_TIME_SCALE
 
@@ -345,6 +347,14 @@ func _on_sword_area_entered(area: Area2D) -> void:
 # =============================================================================
 # Health System
 # =============================================================================
+
+func heal(amount: int) -> void:
+	## Restore health (called by heart pickups)
+	if is_dead:
+		return
+	health = mini(health + amount, max_health)
+	health_changed.emit(health, max_health)
+
 
 func take_damage(amount: int, from_position: Vector2) -> void:
 	## Apply damage to player, trigger invincibility and knockback

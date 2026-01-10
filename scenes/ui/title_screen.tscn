@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://d0xyj4nlq2g8y"]
+
+[ext_resource type="Script" path="res://scripts/ui/title_screen.gd" id="1_title"]
+
+[node name="TitleScreen" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_title")

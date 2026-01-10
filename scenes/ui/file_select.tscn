@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://bw7v3rx5mh2qd"]
+
+[ext_resource type="Script" path="res://scripts/ui/file_select.gd" id="1_fileselect"]
+
+[node name="FileSelect" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_fileselect")

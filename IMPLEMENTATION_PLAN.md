@@ -108,20 +108,24 @@ queue_free()
 - [ ] Dungeon map display (when acquired)
 
 ### 3.3 Screen Overlays
-- [ ] Game over screen
-- [ ] Title screen
-- [ ] File select / save slots
+- [x] Game over screen
+- [x] Title screen
+- [x] File select / save slots (SELECT mode working, REGISTER mode needs fixes)
 
 ---
 
 ## Phase 4: Items & Inventory
 
 ### 4.1 Collectible Drops
-- [ ] Rupees (green=1, blue=5, red=20)
-- [ ] Hearts (restore health)
-- [ ] Keys (dungeon doors)
-- [ ] Bombs (ammo pickup)
-- [ ] Arrows (ammo pickup)
+- [x] Rupees (yellow=1, blue=5)
+- [x] Hearts (restore health)
+- [x] Keys (dungeon doors) - excluded from random drops
+- [x] Bombs (ammo pickup)
+- [x] Arrows (ammo pickup)
+- [x] Drop system with weighted loot tables
+- [x] Despawn timer with blinking warning
+- [ ] TODO: Animate heart sprite (blinking/pulsing)
+- [ ] TODO: Animate rupee sprite (sparkling/shimmering)
 
 ### 4.2 Equipment Items
 - [ ] Wooden Sword (starting weapon)

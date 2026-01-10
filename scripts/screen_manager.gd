@@ -364,10 +364,19 @@ func _setup_hud() -> void:
 	if not hud:
 		return
 
-	# Connect to player for health updates
+	# Connect to player for health updates and death handling
 	var player = get_node_or_null("Player")
 	if player:
 		hud.connect_to_player(player)
+		# Connect player death to show game over screen
+		if player.has_signal("player_died"):
+			player.player_died.connect(_on_player_died)
 
 	# Set initial minimap position
 	hud.update_minimap(current_screen)
+
+
+func _on_player_died() -> void:
+	## Show game over screen when player dies
+	var game_over = preload("res://scenes/ui/game_over.tscn").instantiate()
+	add_child(game_over)
