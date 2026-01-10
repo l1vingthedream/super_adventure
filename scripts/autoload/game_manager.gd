@@ -48,6 +48,25 @@ func _ready() -> void:
 	equipped_item_changed.emit(_item_to_string(equipped_item))
 
 
+const DEBUG_INPUTS_ENABLED := false  # Set to true to enable debug keys (1/2/3)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not DEBUG_INPUTS_ENABLED:
+		return
+	# Debug inputs for testing inventory
+	if event is InputEventKey and event.pressed:
+		match event.keycode:
+			KEY_1:
+				add_rupees(10)
+				print("DEBUG: Added 10 rupees. Total: ", rupees)
+			KEY_2:
+				add_keys(1)
+				print("DEBUG: Added 1 key. Total: ", keys)
+			KEY_3:
+				add_bombs(1)
+				print("DEBUG: Added 1 bomb. Total: ", bombs)
+
+
 func add_rupees(amount: int) -> void:
 	rupees += amount
 

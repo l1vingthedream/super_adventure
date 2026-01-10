@@ -101,9 +101,6 @@ queue_free()
 - [x] Minimap showing current screen position
 - [x] GameManager autoload for inventory state tracking
 
-**Known Bugs (TODO):**
-- [ ] Rupee/key/bomb counter text not visible in HUD - need to fix positioning or rendering
-
 ### 3.2 Pause Menu
 - [ ] Inventory grid display
 - [ ] Item selection for B slot

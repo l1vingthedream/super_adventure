@@ -25,6 +25,30 @@ const NUMBER_REGIONS := [
 	Rect2(600, 117, 8, 8),  # 8
 	Rect2(609, 117, 8, 8),  # 9
 ]
+const X_REGION := Rect2(519, 117, 8, 8)  # "X" prefix for counters
+
+# Item/weapon sprite regions (8x16 each)
+const ITEM_REGIONS := {
+	"wooden_sword": Rect2(555, 137, 8, 16),
+	"white_sword": Rect2(564, 137, 8, 16),
+	"magic_sword": Rect2(573, 137, 8, 16),
+	"boomerang": Rect2(584, 137, 8, 16),
+	"magic_boomerang": Rect2(593, 137, 8, 16),
+	"bomb": Rect2(604, 137, 8, 16),
+	"arrow": Rect2(615, 137, 8, 16),
+	"silver_arrow": Rect2(624, 137, 8, 16),
+	"bow": Rect2(633, 137, 8, 16),
+	"red_candle": Rect2(644, 137, 8, 16),
+	"blue_candle": Rect2(653, 137, 8, 16),
+	"magic_book": Rect2(538, 156, 8, 16),
+	"flute": Rect2(664, 137, 8, 16),
+	"food_bait": Rect2(675, 137, 8, 16),
+	"magic_wand": Rect2(715, 137, 8, 16),
+}
+
+# Item slot positions (B = usable item, A = sword)
+const B_SLOT_POS := Vector2(129, 25)
+const A_SLOT_POS := Vector2(153, 25)
 
 # Heart display configuration (original Zelda: 2 rows of 8)
 const MAX_HEART_CONTAINERS := 16
@@ -33,10 +57,10 @@ const HEART_SPACING := 8
 const HEART_START_X := 176  # Right side of HUD (based on original Zelda layout)
 const HEART_START_Y := 32   # Below "-LIFE-" text area
 
-# Counter positions (relative to HUD, based on original Zelda layout)
-const RUPEE_COUNT_POS := Vector2(96, 16)
-const KEY_COUNT_POS := Vector2(96, 32)
-const BOMB_COUNT_POS := Vector2(96, 40)
+# Counter positions (relative to HUD frame, matching sprite layout)
+const RUPEE_COUNT_POS := Vector2(97, 17)
+const KEY_COUNT_POS := Vector2(97, 33)
+const BOMB_COUNT_POS := Vector2(97, 41)
 
 # Minimap configuration (16x8 overworld grid)
 const MINIMAP_POS := Vector2(16, 16)
@@ -56,6 +80,8 @@ var minimap_control: Control
 var rupee_display: Control
 var key_display: Control
 var bomb_display: Control
+var b_slot_sprite: Sprite2D
+var a_slot_sprite: Sprite2D
 
 # Heart sprite array
 var heart_sprites: Array[Sprite2D] = []
@@ -80,6 +106,14 @@ func _ready() -> void:
 	GameManager.rupees_changed.connect(_on_rupees_changed)
 	GameManager.keys_changed.connect(_on_keys_changed)
 	GameManager.bombs_changed.connect(_on_bombs_changed)
+
+	# Initialize counter displays with current values
+	_on_rupees_changed(GameManager.rupees)
+	_on_keys_changed(GameManager.keys)
+	_on_bombs_changed(GameManager.bombs)
+
+	# Initialize item slots - player starts with wooden sword
+	set_b_slot_item("wooden_sword")
 
 
 func _process(delta: float) -> void:
@@ -141,6 +175,26 @@ func _create_hud_structure() -> void:
 	bomb_display.name = "BombDisplay"
 	bomb_display.position = BOMB_COUNT_POS
 	add_child(bomb_display)
+
+	# B slot (usable item)
+	b_slot_sprite = Sprite2D.new()
+	b_slot_sprite.name = "BSlot"
+	b_slot_sprite.texture = hud_texture
+	b_slot_sprite.region_enabled = true
+	b_slot_sprite.centered = false
+	b_slot_sprite.position = B_SLOT_POS
+	b_slot_sprite.visible = false  # Hidden until item equipped
+	add_child(b_slot_sprite)
+
+	# A slot (sword)
+	a_slot_sprite = Sprite2D.new()
+	a_slot_sprite.name = "ASlot"
+	a_slot_sprite.texture = hud_texture
+	a_slot_sprite.region_enabled = true
+	a_slot_sprite.centered = false
+	a_slot_sprite.position = A_SLOT_POS
+	a_slot_sprite.visible = false  # Hidden until sword acquired
+	add_child(a_slot_sprite)
 
 
 func _setup_hearts() -> void:
@@ -225,31 +279,40 @@ func _on_health_changed(current: int, maximum: int) -> void:
 
 func _on_rupees_changed(amount: int) -> void:
 	## Update rupee counter display
-	_update_number_display(rupee_display, amount, 3)
+	_update_number_display(rupee_display, amount, 2)
 
 
 func _on_keys_changed(amount: int) -> void:
 	## Update key counter display
-	_update_number_display(key_display, amount, 2)
+	_update_number_display(key_display, amount, 1)
 
 
 func _on_bombs_changed(amount: int) -> void:
 	## Update bomb counter display
-	_update_number_display(bomb_display, amount, 2)
+	_update_number_display(bomb_display, amount, 1)
 
 
 func _update_number_display(container: Control, value: int, digits: int) -> void:
-	## Update a number display with sprite-based digits
-	# Clear existing digit sprites
+	## Update a number display with "X" prefix and sprite-based digits
+	# Clear existing sprites
 	for child in container.get_children():
 		child.queue_free()
+
+	# Add "X" prefix sprite
+	var x_sprite := Sprite2D.new()
+	x_sprite.texture = hud_texture
+	x_sprite.region_enabled = true
+	x_sprite.region_rect = X_REGION
+	x_sprite.centered = false
+	x_sprite.position = Vector2(0, 0)
+	container.add_child(x_sprite)
 
 	# Format value with leading zeros
 	var value_str := str(value)
 	while value_str.length() < digits:
 		value_str = "0" + value_str
 
-	# Create digit sprites
+	# Create digit sprites (offset by 8 for the "X")
 	for i in range(value_str.length()):
 		var digit := int(value_str[i])
 		var sprite := Sprite2D.new()
@@ -257,5 +320,23 @@ func _update_number_display(container: Control, value: int, digits: int) -> void
 		sprite.region_enabled = true
 		sprite.region_rect = NUMBER_REGIONS[digit]
 		sprite.centered = false
-		sprite.position = Vector2(i * 8, 0)
+		sprite.position = Vector2(8 + i * 8, 0)  # Start after "X"
 		container.add_child(sprite)
+
+
+func set_b_slot_item(item_name: String) -> void:
+	## Set the item displayed in the B slot
+	if item_name == "" or item_name == "none":
+		b_slot_sprite.visible = false
+	elif item_name in ITEM_REGIONS:
+		b_slot_sprite.region_rect = ITEM_REGIONS[item_name]
+		b_slot_sprite.visible = true
+
+
+func set_a_slot_item(item_name: String) -> void:
+	## Set the item displayed in the A slot (sword)
+	if item_name == "" or item_name == "none":
+		a_slot_sprite.visible = false
+	elif item_name in ITEM_REGIONS:
+		a_slot_sprite.region_rect = ITEM_REGIONS[item_name]
+		a_slot_sprite.visible = true
