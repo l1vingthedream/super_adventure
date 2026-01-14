@@ -12,6 +12,9 @@ signal equipped_item_changed(item_name: String)
 signal game_paused
 signal game_resumed
 
+# Sword signal
+signal sword_changed(sword_type: Sword)
+
 # Inventory limits
 const MAX_RUPEES := 255
 const MAX_KEYS := 255
@@ -20,6 +23,9 @@ const MAX_ARROWS := 255
 
 # Item enum for equipped B-button item
 enum Item { NONE, BOOMERANG, BOMBS, BOW, CANDLE, RECORDER, FOOD, LETTER, WAND }
+
+# Sword enum for equipped weapon
+enum Sword { NONE, WOODEN, WHITE, MAGICAL }
 
 # Current inventory state
 var rupees := 0:
@@ -50,9 +56,20 @@ var equipped_item: Item = Item.NONE:
 # Owned items (for inventory screen)
 var owned_items: Array[Item] = []
 
+# Current sword (weapon equipment)
+var current_sword: Sword = Sword.NONE:
+	set(value):
+		current_sword = value
+		sword_changed.emit(current_sword)
+
 # Pause state
 var is_paused := false
 var is_in_dungeon := false  # For Triforce vs Dungeon frame in pause menu
+
+# Cave/interior return state
+var returning_from_cave := false
+var cave_exit_screen := Vector2i(7, 7)  # Screen to return to
+var cave_exit_tile := Vector2i(4, 1)  # Tile position within screen (0-based)
 
 
 func _ready() -> void:
@@ -172,6 +189,17 @@ func use_arrow() -> bool:
 func acquire_item(item: Item) -> void:
 	if item not in owned_items:
 		owned_items.append(item)
+
+
+func acquire_sword(sword_type: Sword) -> void:
+	## Grant a sword to the player (only upgrades, never downgrades)
+	if sword_type > current_sword:
+		current_sword = sword_type
+
+
+func has_sword() -> bool:
+	## Check if player has any sword equipped
+	return current_sword != Sword.NONE
 
 
 func _item_to_string(item: Item) -> String:

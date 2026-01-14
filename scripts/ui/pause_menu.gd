@@ -33,6 +33,14 @@ const NUMBER_REGIONS := [
 ]
 const X_REGION := Rect2(519, 117, 8, 8)  # "X" prefix for counters
 
+# Sword display configuration (left side of inventory frame)
+const SWORD_SLOT_POS := Vector2(68, 33)  # Position in inventory frame
+# Sword sprites will be loaded from items_weapons.png
+const ITEMS_TEXTURE_PATH := "res://assets/items_weapons.png"
+const WOODEN_SWORD_REGION := Rect2(72, 0, 8, 16)
+const WHITE_SWORD_REGION := Rect2(80, 0, 8, 16)  # Placeholder
+const MAGICAL_SWORD_REGION := Rect2(88, 0, 8, 16)  # Placeholder
+
 # HUD section offset (bottom panel starts at y=176)
 const HUD_SECTION_Y := 176
 
@@ -127,6 +135,10 @@ var current_screen := Vector2i(7, 7)  # Default screen position
 # Item sprites for inventory display (drawn when owned)
 var inventory_item_sprites: Dictionary = {}  # item_name -> Sprite2D
 
+# Sword display
+var items_texture: Texture2D
+var sword_sprite: Sprite2D
+
 
 func _ready() -> void:
 	layer = 10  # Render above game and HUD
@@ -134,6 +146,7 @@ func _ready() -> void:
 	visible = false
 
 	hud_texture = load(HUD_TEXTURE_PATH)
+	items_texture = load(ITEMS_TEXTURE_PATH)
 	_build_menu_structure()
 
 	# Connect to GameManager signals
@@ -176,6 +189,15 @@ func _build_menu_structure() -> void:
 	b_slot_sprite.position = B_SLOT_DISPLAY_POS
 	b_slot_sprite.visible = false
 	add_child(b_slot_sprite)
+
+	# Sword display sprite (left side of inventory)
+	sword_sprite = Sprite2D.new()
+	sword_sprite.texture = items_texture
+	sword_sprite.region_enabled = true
+	sword_sprite.centered = false
+	sword_sprite.position = SWORD_SLOT_POS
+	sword_sprite.visible = false
+	add_child(sword_sprite)
 
 	# Create item sprites for all grid positions
 	_create_item_sprites()
@@ -399,6 +421,7 @@ func _on_game_paused() -> void:
 	_refresh_inventory()
 	_update_middle_frame()
 	_update_b_slot_display()
+	_update_sword_display()
 	_update_hud_display()
 	visible = true
 
@@ -528,6 +551,22 @@ func _update_b_slot_display() -> void:
 		b_slot_sprite.visible = true
 	else:
 		b_slot_sprite.visible = false
+
+
+func _update_sword_display() -> void:
+	## Update sword display in inventory based on equipped sword
+	match GameManager.current_sword:
+		GameManager.Sword.WOODEN:
+			sword_sprite.region_rect = WOODEN_SWORD_REGION
+			sword_sprite.visible = true
+		GameManager.Sword.WHITE:
+			sword_sprite.region_rect = WHITE_SWORD_REGION
+			sword_sprite.visible = true
+		GameManager.Sword.MAGICAL:
+			sword_sprite.region_rect = MAGICAL_SWORD_REGION
+			sword_sprite.visible = true
+		_:
+			sword_sprite.visible = false
 
 
 func _update_hud_display() -> void:

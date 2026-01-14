@@ -41,6 +41,18 @@ var enemies_container: Node2D
 # HUD reference
 var hud: CanvasLayer
 
+# Cave entrance definitions: screen -> { tile position within screen, destination scene }
+# Tile positions use 0-based indexing (col, row)
+var cave_entrances := {
+	Vector2i(7, 7): {  # Starting screen
+		"tile": Vector2i(4, 1),  # Col 5, Row 2 in 1-based = Col 4, Row 1 in 0-based
+		"destination": "res://scenes/caves/old_man_cave.tscn"
+	}
+}
+
+# Signal for cave transitions
+signal entering_cave(destination: String)
+
 
 func _ready() -> void:
 	load_collision_data()
@@ -59,6 +71,9 @@ func _ready() -> void:
 
 	# Set up HUD connections after scene is ready
 	call_deferred("_setup_hud")
+
+	# Handle return from cave/interior
+	call_deferred("_handle_cave_return")
 
 
 func load_collision_data() -> void:
@@ -355,6 +370,44 @@ func _clear_enemies() -> void:
 
 
 # =============================================================================
+# Cave Entrance Detection
+# =============================================================================
+
+func check_cave_entrance(player_pos: Vector2) -> bool:
+	## Check if player is standing on a cave entrance tile
+	## Returns true if entering a cave (caller should stop movement)
+	if is_transitioning:
+		return false
+
+	# Get current screen
+	var screen := get_screen_from_position(player_pos)
+	if screen not in cave_entrances:
+		return false
+
+	# Calculate tile position within the screen
+	var screen_origin := Vector2(screen.x * SCREEN_WIDTH_PX, screen.y * SCREEN_HEIGHT_PX)
+	var local_pos := player_pos - screen_origin
+	var tile_pos := Vector2i(int(local_pos.x / TILE_SIZE), int(local_pos.y / TILE_SIZE))
+
+	# Debug: uncomment to see tile position
+	# print("Player tile pos: ", tile_pos, " | Cave entrance: ", cave_entrances[screen]["tile"])
+
+	# Check if on cave entrance tile
+	var cave_data: Dictionary = cave_entrances[screen]
+	if tile_pos == cave_data["tile"]:
+		_enter_cave(cave_data["destination"])
+		return true
+
+	return false
+
+
+func _enter_cave(destination: String) -> void:
+	## Transition to a cave scene
+	entering_cave.emit(destination)
+	get_tree().change_scene_to_file(destination)
+
+
+# =============================================================================
 # HUD Setup
 # =============================================================================
 
@@ -374,6 +427,46 @@ func _setup_hud() -> void:
 
 	# Set initial minimap position
 	hud.update_minimap(current_screen)
+
+
+func _handle_cave_return() -> void:
+	## Position player at cave exit if returning from cave
+	if not GameManager.returning_from_cave:
+		return
+
+	GameManager.returning_from_cave = false
+
+	var player = get_node_or_null("Player")
+	if not player:
+		return
+
+	# Set screen to cave exit screen
+	current_screen = GameManager.cave_exit_screen
+	center_camera_on_screen(current_screen)
+
+	# Calculate player position at cave exit tile
+	var tile := GameManager.cave_exit_tile
+	var screen_origin := Vector2(current_screen.x * SCREEN_WIDTH_PX, current_screen.y * SCREEN_HEIGHT_PX)
+	var tile_center := Vector2(
+		tile.x * TILE_SIZE + TILE_SIZE / 2.0,
+		tile.y * TILE_SIZE + TILE_SIZE + 8  # Position below cave entrance, facing down
+	)
+	player.global_position = screen_origin + tile_center
+
+	# Set player facing down
+	if player.has_method("set_facing_down"):
+		player.set_facing_down()
+	elif "facing" in player:
+		player.facing = player.Direction.DOWN
+		if player.has_method("update_animation"):
+			player.update_animation()
+
+	# Update minimap
+	if hud:
+		hud.update_minimap(current_screen)
+
+	# Re-spawn enemies for the return screen
+	_spawn_enemies_for_screen(current_screen)
 
 
 func _on_player_died() -> void:

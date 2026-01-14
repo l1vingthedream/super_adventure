@@ -138,6 +138,10 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+	# Check for cave entrance (before screen transition check)
+	if screen_manager.check_cave_entrance(global_position):
+		return  # Entering cave, skip other checks
+
 	# Check for screen edge crossing
 	check_screen_transition(old_screen)
 
@@ -230,8 +234,17 @@ func update_animation() -> void:
 
 
 func start_attack() -> void:
+	## Start sword attack (requires sword to be equipped)
+	if not GameManager.has_sword():
+		return
 	is_attacking = true
 	update_animation()
+
+
+func receive_sword() -> void:
+	## Called when player collects a sword pickup
+	# Visual/audio feedback could be added here
+	pass
 
 
 func _on_animation_finished() -> void:

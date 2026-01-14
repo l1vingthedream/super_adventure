@@ -112,14 +112,15 @@ func _ready() -> void:
 	GameManager.rupees_changed.connect(_on_rupees_changed)
 	GameManager.keys_changed.connect(_on_keys_changed)
 	GameManager.bombs_changed.connect(_on_bombs_changed)
+	GameManager.sword_changed.connect(_on_sword_changed)
 
 	# Initialize counter displays with current values
 	_on_rupees_changed(GameManager.rupees)
 	_on_keys_changed(GameManager.keys)
 	_on_bombs_changed(GameManager.bombs)
 
-	# Initialize item slots - player starts with wooden sword
-	set_b_slot_item("wooden_sword")
+	# Initialize sword display based on current state
+	_on_sword_changed(GameManager.current_sword)
 
 
 func _process(delta: float) -> void:
@@ -346,3 +347,16 @@ func set_a_slot_item(item_name: String) -> void:
 	elif item_name in ITEM_REGIONS:
 		a_slot_sprite.region_rect = ITEM_REGIONS[item_name]
 		a_slot_sprite.visible = true
+
+
+func _on_sword_changed(sword_type: GameManager.Sword) -> void:
+	## Update A slot display when sword changes
+	match sword_type:
+		GameManager.Sword.WOODEN:
+			set_a_slot_item("wooden_sword")
+		GameManager.Sword.WHITE:
+			set_a_slot_item("white_sword")
+		GameManager.Sword.MAGICAL:
+			set_a_slot_item("magic_sword")
+		_:
+			set_a_slot_item("none")

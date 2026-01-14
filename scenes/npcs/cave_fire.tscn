@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3 uid="uid://cave_fire_scene"]
+
+[ext_resource type="Texture2D" path="res://assets/NPCs.png" id="1_npcs_texture"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fire1"]
+atlas = ExtResource("1_npcs_texture")
+region = Rect2(52, 11, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fire2"]
+atlas = ExtResource("1_npcs_texture")
+region = Rect2(69, 11, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_fire"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fire1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fire2")
+}],
+"loop": true,
+"name": &"flicker",
+"speed": 4.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_collision"]
+size = Vector2(16, 16)
+
+[node name="CaveFire" type="Node2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_fire")
+animation = &"flicker"
+autoplay = "flicker"
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource("RectangleShape2D_collision")
