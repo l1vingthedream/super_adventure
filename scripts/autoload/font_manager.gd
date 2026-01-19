@@ -14,7 +14,7 @@ const COLOR_ROW_OFFSET := {
 	FontColor.WHITE: 0,
 	FontColor.BLUE: 3,
 	FontColor.GREEN: 6,
-	FontColor.RED: 9,
+	FontColor.RED: 8,
 }
 
 # Character mapping: character -> (column, row) in Fonts.png (white variant)
