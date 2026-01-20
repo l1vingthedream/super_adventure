@@ -19,7 +19,7 @@ const FRAME_OFFSET := Vector2(5, 4)  # Small offset to center 246px in 256px
 # Slot display positions (relative to frame)
 # Player icon is 16x16, positioned to the right of cursor (cursor at x=39)
 const SLOT_NAME_X := 72
-const SLOT_HEARTS_X := 152
+const SLOT_HEARTS_X := 144
 const SLOT_POSITIONS := [
 	Vector2(48, 84),   # Slot 1 - player icon position (to right of cursor)
 	Vector2(48, 108),  # Slot 2
@@ -40,12 +40,12 @@ const SELECT_CURSOR_POSITIONS := [
 const ALPHABET := "ABCDEFGHIJKLMNOPQRSTUVWXYZ-.,!'&.0123456789"
 const GRID_COLS := 11
 const GRID_ROWS := 4
-const GRID_START := Vector2(24, 128)  # Grid position in register frame (aligned with letters)
-const GRID_CELL_SIZE := Vector2(16, 16)
+const GRID_START := Vector2(48, 128)  # Grid position in register frame (aligned with letters)
+const GRID_CELL_SIZE := Vector2(16, 16)  # 16px spacing for character grid
 
 # REGISTER cursor positions (grid + REGISTER/END options)
-const REGISTER_OPTION_POS := Vector2(56, 96)   # "REGISTER" button
-const END_OPTION_POS := Vector2(144, 96)       # "END" button
+const REGISTER_OPTION_POS := Vector2(67, 112)   # "REGISTER" button
+const END_OPTION_POS := Vector2(164, 112)       # "END" button
 
 # Screen modes
 enum Mode { SELECT, REGISTER, ELIMINATION }
@@ -126,13 +126,13 @@ func _build_file_select() -> void:
 
 		# Heart container for each slot
 		var hearts := Control.new()
-		hearts.position = FRAME_OFFSET + Vector2(SLOT_HEARTS_X, SLOT_POSITIONS[i].y + 4)
+		hearts.position = FRAME_OFFSET + Vector2(SLOT_HEARTS_X, SLOT_POSITIONS[i].y - 4)
 		add_child(hearts)
 		heart_containers.append(hearts)
 
 		# Name label placeholder (will be populated with sprites)
 		var name_container := Control.new()
-		name_container.position = FRAME_OFFSET + Vector2(SLOT_NAME_X, SLOT_POSITIONS[i].y + 4)
+		name_container.position = FRAME_OFFSET + Vector2(SLOT_NAME_X, SLOT_POSITIONS[i].y - 4)
 		add_child(name_container)
 		name_labels.append(name_container)
 
@@ -250,20 +250,22 @@ func _handle_register_input(event: InputEvent) -> void:
 func _handle_elimination_input(event: InputEvent) -> void:
 	## Handle input in ELIMINATION mode
 	if event.is_action_pressed("move_up"):
-		cursor_index = (cursor_index - 1 + 4) % 4  # 3 slots + back option
-		_update_cursor_position()
+		if cursor_index > 0:
+			cursor_index -= 1
+			_update_cursor_position()
 		get_viewport().set_input_as_handled()
 
 	elif event.is_action_pressed("move_down"):
-		cursor_index = (cursor_index + 1) % 4
-		_update_cursor_position()
+		if cursor_index < 2:
+			cursor_index += 1
+			_update_cursor_position()
+		else:
+			# Moving past bottom slot exits elimination mode
+			_switch_to_select()
 		get_viewport().set_input_as_handled()
 
 	elif event.is_action_pressed("attack") or event.is_action_pressed("start"):
-		if cursor_index < 3:
-			_delete_save(cursor_index)
-		else:
-			_switch_to_select()
+		_delete_save(cursor_index)
 		get_viewport().set_input_as_handled()
 
 	elif event.is_action_pressed("pause"):
@@ -432,34 +434,9 @@ func _display_slot_hearts(slot: int, count: int) -> void:
 
 
 func _display_slot_name(slot: int, player_name: String) -> void:
-	## Display player name for a save slot using sprite font
-	# For now, use simple approach - the name is displayed in the frame image
-	# This could be enhanced with a proper sprite font system
+	## Display player name for a save slot using FontManager
 	var container := name_labels[slot]
-
-	# Use HUD texture for font characters
-	var hud_texture := load("res://assets/HUDs.png") as Texture2D
-	if not hud_texture:
-		return
-
-	# Character mapping (simplified - matches HUDs.png layout)
-	const CHAR_MAP := "0123456789X"  # Numbers only for now
-	const CHAR_REGIONS := [
-		Rect2(528, 117, 8, 8),  # 0
-		Rect2(537, 117, 8, 8),  # 1
-		Rect2(546, 117, 8, 8),  # 2
-		Rect2(555, 117, 8, 8),  # 3
-		Rect2(564, 117, 8, 8),  # 4
-		Rect2(573, 117, 8, 8),  # 5
-		Rect2(582, 117, 8, 8),  # 6
-		Rect2(591, 117, 8, 8),  # 7
-		Rect2(600, 117, 8, 8),  # 8
-		Rect2(609, 117, 8, 8),  # 9
-	]
-
-	# For letters, we'd need a font sprite sheet
-	# For now, the names are embedded in the frame backgrounds
-	# The frame shows the name entry area
+	FontManager.create_text_sprites(player_name.to_upper(), FontManager.FontColor.WHITE, container)
 
 
 func _update_name_preview() -> void:
@@ -467,8 +444,9 @@ func _update_name_preview() -> void:
 	for child in name_preview_container.get_children():
 		child.queue_free()
 
-	# Display entered name (simplified - would need proper font sprites)
-	# The entered name appears in a specific region of the register frame
+	# Display entered name using FontManager
+	if entered_name.length() > 0:
+		FontManager.create_text_sprites(entered_name.to_upper(), FontManager.FontColor.RED, name_preview_container)
 
 
 func _notification(what: int) -> void:
