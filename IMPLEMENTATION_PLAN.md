@@ -142,8 +142,8 @@ queue_free()
 - [ ] TODO: Animate rupee sprite (sparkling/shimmering)
 
 ### 4.2 Equipment Items
-- [ ] Wooden Sword (starting weapon)
-- [ ] White Sword (upgrade, requires 5 hearts)
+- [x] Wooden Sword (starting weapon)
+- [x] White Sword (upgrade, requires 5 hearts)
 - [ ] Magical Sword (upgrade, requires 12 hearts)
 - [ ] Wooden Shield (block projectiles)
 - [ ] Magical Shield (block more projectiles)
