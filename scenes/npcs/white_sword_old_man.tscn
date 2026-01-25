@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3 uid="uid://white_sword_old_man_scene"]
+
+[ext_resource type="Script" path="res://scripts/npcs/white_sword_old_man.gd" id="1_old_man_script"]
+[ext_resource type="Texture2D" path="res://assets/NPCs.png" id="2_npcs_texture"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_detection"]
+size = Vector2(80, 60)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_collision"]
+size = Vector2(16, 16)
+
+[node name="WhiteSwordOldMan" type="Node2D"]
+script = ExtResource("1_old_man_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_npcs_texture")
+region_enabled = true
+region_rect = Rect2(1, 11, 16, 16)
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource("RectangleShape2D_collision")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+position = Vector2(0, 24)
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("RectangleShape2D_detection")
+
+[connection signal="body_entered" from="DetectionArea" to="." method="_on_detection_area_body_entered"]

@@ -71,6 +71,10 @@ var returning_from_cave := false
 var cave_exit_screen := Vector2i(7, 7)  # Screen to return to
 var cave_exit_tile := Vector2i(4, 1)  # Tile position within screen (0-based)
 
+# Shop/merchant state
+var has_purchased_bombs := false  # Unlocks bomb drops from enemies
+var has_shield := false  # Player owns a shield
+
 
 func _ready() -> void:
 	# Allow processing even when game is paused (for pause toggle)
@@ -121,6 +125,33 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_5:
 				add_arrows(5)
 				print("DEBUG: Added 5 arrows. Total: ", arrows)
+			KEY_6:
+				# Add 3 heart containers for testing white sword requirement
+				var player = get_tree().get_first_node_in_group("player")
+				if player and "max_health" in player:
+					player.max_health += 3
+					player.health = player.max_health  # Heal to full
+					if player.has_signal("health_changed"):
+						player.health_changed.emit(player.health, player.max_health)
+					print("DEBUG: Added 3 heart containers. Max health: ", player.max_health)
+			KEY_7:
+				# Teleport to merchant cave screen (15, 6)
+				var player = get_tree().get_first_node_in_group("player")
+				var screen_manager = get_tree().get_first_node_in_group("screen_manager")
+				if not screen_manager:
+					# Try getting it as parent of player
+					screen_manager = player.get_parent() if player else null
+				if player and screen_manager and screen_manager.has_method("center_camera_on_screen"):
+					var target_screen := Vector2i(15, 6)
+					var screen_width := 256
+					var screen_height := 176
+					player.global_position = Vector2(
+						target_screen.x * screen_width + screen_width / 2.0,
+						target_screen.y * screen_height + screen_height / 2.0
+					)
+					screen_manager.current_screen = target_screen
+					screen_manager.center_camera_on_screen(target_screen)
+					print("DEBUG: Teleported to screen (15, 6) - Merchant cave")
 
 
 func toggle_pause() -> void:

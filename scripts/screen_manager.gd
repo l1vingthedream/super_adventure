@@ -47,6 +47,14 @@ var cave_entrances := {
 	Vector2i(7, 7): {  # Starting screen
 		"tile": Vector2i(4, 1),  # Col 5, Row 2 in 1-based = Col 4, Row 1 in 0-based
 		"destination": "res://scenes/caves/old_man_cave.tscn"
+	},
+	Vector2i(10, 0): {  # White sword cave screen (col=10, row=0)
+		"tile": Vector2i(2, 1),  # Tile col=2, row=1
+		"destination": "res://scenes/caves/white_sword_cave.tscn"
+	},
+	Vector2i(15, 6): {  # Merchant cave screen (col=15, row=6)
+		"tile": Vector2i(3, 2),  # Tile col=3, row=2
+		"destination": "res://scenes/caves/merchant_cave.tscn"
 	}
 }
 
@@ -381,6 +389,8 @@ func check_cave_entrance(player_pos: Vector2) -> bool:
 
 	# Get current screen
 	var screen := get_screen_from_position(player_pos)
+	# DEBUG: Always print current screen
+	print("DEBUG check_cave_entrance - Current screen: ", screen)
 	if screen not in cave_entrances:
 		return false
 
@@ -389,8 +399,8 @@ func check_cave_entrance(player_pos: Vector2) -> bool:
 	var local_pos := player_pos - screen_origin
 	var tile_pos := Vector2i(int(local_pos.x / TILE_SIZE), int(local_pos.y / TILE_SIZE))
 
-	# Debug: uncomment to see tile position
-	# print("Player tile pos: ", tile_pos, " | Cave entrance: ", cave_entrances[screen]["tile"])
+	# Debug: see tile position
+	print("Screen: ", screen, " | Player tile pos: ", tile_pos, " | Cave entrance: ", cave_entrances[screen]["tile"])
 
 	# Check if on cave entrance tile
 	var cave_data: Dictionary = cave_entrances[screen]
