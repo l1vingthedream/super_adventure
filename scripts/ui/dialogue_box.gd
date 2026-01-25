@@ -3,41 +3,20 @@ extends CanvasLayer
 
 signal text_finished
 
-const FONTS_PATH := "res://assets/Fonts.png"
 const CHAR_WIDTH := 8
 const CHAR_HEIGHT := 8
-const CHAR_SPACING := 8  # Horizontal spacing between characters in texture
 
 # Text display settings
 const LETTER_DELAY := 0.05  # Seconds between each letter
 const LINE_HEIGHT := 12  # Vertical spacing between lines
 
-# Cave dialogue positioning (columns 4-13, rows 3-4)
+# Cave dialogue positioning (columns 4-13, rows 5-6)
 const TEXT_AREA_LEFT := 64  # Column 4 * 16px tile size = 64
 const TEXT_AREA_RIGHT := 208  # Column 13 * 16px = 208 (end of column 12)
 const TEXT_AREA_WIDTH := 144  # 208 - 64
-const ROW_3_Y := 48  # Row 3 * 16px = 48
-const ROW_4_Y := 60  # Row 4 * 16px = 64, but use 60 for closer spacing
+const ROW_3_Y := 88  # First line of dialogue
+const ROW_4_Y := 100  # Second line of dialogue
 
-# Character mapping: character -> (column, row) in Fonts.png
-# Row 0: 0123456789ABCDEF (white)
-# Row 1: GHIJKLMNOPQRSTUV (white)
-# Row 2: WXYZ,.!?'- (white) and more punctuation
-const CHAR_MAP := {
-	"0": Vector2i(0, 0), "1": Vector2i(1, 0), "2": Vector2i(2, 0), "3": Vector2i(3, 0),
-	"4": Vector2i(4, 0), "5": Vector2i(5, 0), "6": Vector2i(6, 0), "7": Vector2i(7, 0),
-	"8": Vector2i(8, 0), "9": Vector2i(9, 0), "A": Vector2i(10, 0), "B": Vector2i(11, 0),
-	"C": Vector2i(12, 0), "D": Vector2i(13, 0), "E": Vector2i(14, 0), "F": Vector2i(15, 0),
-	"G": Vector2i(0, 1), "H": Vector2i(1, 1), "I": Vector2i(2, 1), "J": Vector2i(3, 1),
-	"K": Vector2i(4, 1), "L": Vector2i(5, 1), "M": Vector2i(6, 1), "N": Vector2i(7, 1),
-	"O": Vector2i(8, 1), "P": Vector2i(9, 1), "Q": Vector2i(10, 1), "R": Vector2i(11, 1),
-	"S": Vector2i(12, 1), "T": Vector2i(13, 1), "U": Vector2i(14, 1), "V": Vector2i(15, 1),
-	"W": Vector2i(0, 2), "X": Vector2i(1, 2), "Y": Vector2i(2, 2), "Z": Vector2i(3, 2),
-	",": Vector2i(4, 2), ".": Vector2i(5, 2), "!": Vector2i(6, 2), "?": Vector2i(7, 2),
-	"'": Vector2i(8, 2), "-": Vector2i(9, 2),
-}
-
-var fonts_texture: Texture2D
 var text_container: Control
 var letter_sprites: Array[Sprite2D] = []
 var current_lines: Array[String] = []  # Pre-split lines for centering
@@ -50,8 +29,6 @@ var is_displaying := false
 func _ready() -> void:
 	layer = 10  # Above game but same as pause menu
 	visible = false
-
-	fonts_texture = load(FONTS_PATH)
 
 	# Create container for letter sprites
 	text_container = Control.new()
@@ -136,11 +113,11 @@ func _show_next_letter() -> void:
 	if char == " ":
 		return
 
-	# Get character position in font texture
-	if char not in CHAR_MAP:
+	# Get character region from FontManager
+	if not FontManager.has_character(char):
 		return  # Unknown character, skip
 
-	var char_pos: Vector2i = CHAR_MAP[char]
+	var region := FontManager.get_char_region(char)
 
 	# Calculate centered position for this character
 	var text_position := _calculate_centered_char_position(
@@ -149,14 +126,9 @@ func _show_next_letter() -> void:
 
 	# Create sprite for this character
 	var sprite := Sprite2D.new()
-	sprite.texture = fonts_texture
+	sprite.texture = FontManager.fonts_texture
 	sprite.region_enabled = true
-	sprite.region_rect = Rect2(
-		char_pos.x * CHAR_SPACING,
-		char_pos.y * CHAR_SPACING,
-		CHAR_WIDTH,
-		CHAR_HEIGHT
-	)
+	sprite.region_rect = region
 	sprite.centered = false
 	sprite.position = text_position
 
