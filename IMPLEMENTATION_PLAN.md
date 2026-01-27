@@ -165,7 +165,7 @@ queue_free()
 ## Phase 5: Expanded Enemies
 
 ### 5.1 Overworld Enemies
-- [ ] Octorok (red/blue) - walks, shoots rocks
+- [x] Octorok (red/blue) - walks, shoots rocks
 - [ ] Tektite (red/blue) - hops randomly
 - [ ] Leever (red/blue) - emerges from sand
 - [ ] Peahat - flies, invulnerable while moving

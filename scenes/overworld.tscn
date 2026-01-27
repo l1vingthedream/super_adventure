@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://cqbsm2fkh8n7h"]
+[gd_scene load_steps=9 format=3 uid="uid://cqbsm2fkh8n7h"]
 
 [ext_resource type="Script" uid="uid://b33hikjwkbj2f" path="res://scripts/screen_manager.gd" id="1_screen"]
-[ext_resource type="Texture2D" uid="uid://ixaowt4esv1t" path="res://assets/overworld_tileset.png" id="2_tileset"]
+[ext_resource type="Texture2D" uid="uid://bn5wjerlfvm3j" path="res://assets/overworld_tileset.png" id="2_tileset"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
 [ext_resource type="PackedScene" uid="uid://cs4hqr5dxfbya" path="res://scenes/ui/hud.tscn" id="4_hud"]
 [ext_resource type="PackedScene" uid="uid://bpausemenuscene" path="res://scenes/ui/pause_menu.tscn" id="5_pause"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/blue_octorok.tscn" id="6_blue_octorok"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_main"]
 texture = ExtResource("2_tileset")
@@ -27,3 +28,21 @@ position = Vector2(1920, 1320)
 [node name="HUD" parent="." instance=ExtResource("4_hud")]
 
 [node name="PauseMenu" parent="." instance=ExtResource("5_pause")]
+
+[node name="BlueOctorok_8_7_A" parent="." instance=ExtResource("6_blue_octorok")]
+position = Vector2(2128, 1292)
+
+[node name="BlueOctorok_8_7_B" parent="." instance=ExtResource("6_blue_octorok")]
+position = Vector2(2224, 1332)
+
+[node name="BlueOctorok_4_6_A" parent="." instance=ExtResource("6_blue_octorok")]
+position = Vector2(1104, 1116)
+
+[node name="BlueOctorok_4_6_B" parent="." instance=ExtResource("6_blue_octorok")]
+position = Vector2(1200, 1156)
+
+[node name="BlueOctorok_3_6_A" parent="." instance=ExtResource("6_blue_octorok")]
+position = Vector2(848, 1116)
+
+[node name="BlueOctorok_3_6_B" parent="." instance=ExtResource("6_blue_octorok")]
+position = Vector2(944, 1156)
