@@ -135,23 +135,35 @@ func _unhandled_input(event: InputEvent) -> void:
 						player.health_changed.emit(player.health, player.max_health)
 					print("DEBUG: Added 3 heart containers. Max health: ", player.max_health)
 			KEY_7:
-				# Teleport to merchant cave screen (15, 6)
-				var player = get_tree().get_first_node_in_group("player")
-				var screen_manager = get_tree().get_first_node_in_group("screen_manager")
-				if not screen_manager:
-					# Try getting it as parent of player
-					screen_manager = player.get_parent() if player else null
+				# Teleport to merchant cave screen (15, 6), tile (4, 4)
+				var screen_manager = get_tree().current_scene
+				var player = screen_manager.get_node_or_null("Player") if screen_manager else null
 				if player and screen_manager and screen_manager.has_method("center_camera_on_screen"):
 					var target_screen := Vector2i(15, 6)
+					var target_tile := Vector2i(4, 4)
 					var screen_width := 256
 					var screen_height := 176
-					player.global_position = Vector2(
-						target_screen.x * screen_width + screen_width / 2.0,
-						target_screen.y * screen_height + screen_height / 2.0
+					var tile_size := 16
+					# Calculate screen origin
+					var screen_origin := Vector2(
+						target_screen.x * screen_width,
+						target_screen.y * screen_height
 					)
+					# Position player at tile center
+					var new_pos := Vector2(
+						screen_origin.x + target_tile.x * tile_size + tile_size / 2.0,
+						screen_origin.y + target_tile.y * tile_size + tile_size / 2.0
+					)
+					player.global_position = new_pos
+					# Must also set subpixel_position or player snaps back
+					if "subpixel_position" in player:
+						player.subpixel_position = new_pos
 					screen_manager.current_screen = target_screen
 					screen_manager.center_camera_on_screen(target_screen)
-					print("DEBUG: Teleported to screen (15, 6) - Merchant cave")
+					print("DEBUG: Player node: ", player.name, " at ", player.global_position)
+					print("DEBUG: Camera at: ", screen_manager.camera.position if "camera" in screen_manager else "unknown")
+				else:
+					print("DEBUG: Cannot teleport - player: ", player, " screen_manager: ", screen_manager)
 
 
 func toggle_pause() -> void:

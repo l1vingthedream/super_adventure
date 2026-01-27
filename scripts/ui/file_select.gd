@@ -314,6 +314,8 @@ func _switch_to_register() -> void:
 	grid_cursor = Vector2i(0, 0)
 	register_option = 0
 	frame_sprite.region_rect = REGISTER_FRAME_REGION
+	# Position name preview at the same Y as the target slot's name position
+	name_preview_container.position = FRAME_OFFSET + Vector2(SLOT_NAME_X, SLOT_POSITIONS[target_slot].y - 4)
 	name_preview_container.visible = true
 	_update_name_preview()
 	_update_cursor_position()

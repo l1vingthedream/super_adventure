@@ -70,11 +70,16 @@ func show_text(text: String) -> void:
 
 func _split_into_lines(text: String) -> Array[String]:
 	## Split text into centered lines for display
-	# For the old man dialogue specifically
 	var lines: Array[String] = []
+	# Handle specific dialogues
 	if "DANGEROUS" in text and "ALONE" in text:
 		lines.append("ITS DANGEROUS TO GO")
 		lines.append("ALONE! TAKE THIS")
+	elif "SOMETHIN" in text and "WILL YA" in text:
+		lines.append("BUY SOMETHIN")
+		lines.append("WILL YA!")
+	elif "NOT ENOUGH" in text:
+		lines.append("NOT ENOUGH RUPEES")
 	else:
 		# Generic split at ~20 chars
 		var words := text.split(" ")

@@ -37,15 +37,23 @@ const DUNGEON_ENEMY_DROP_TABLE := {
 func roll_drop(drop_table: Dictionary = GENERAL_DROP_TABLE) -> String:
 	## Roll for a drop using weighted random selection.
 	## Returns the item key or "nothing".
+	## Bombs only drop if player has purchased them from merchant.
+	var effective_table := drop_table.duplicate()
+
+	# Gate bomb drops behind purchase flag
+	if not GameManager.has_purchased_bombs and "bomb" in effective_table:
+		effective_table["nothing"] += effective_table["bomb"]
+		effective_table.erase("bomb")
+
 	var total_weight := 0
-	for weight in drop_table.values():
+	for weight in effective_table.values():
 		total_weight += weight
 
 	var roll := randi() % total_weight
 	var cumulative := 0
 
-	for item_key in drop_table:
-		cumulative += drop_table[item_key]
+	for item_key in effective_table:
+		cumulative += effective_table[item_key]
 		if roll < cumulative:
 			return item_key
 

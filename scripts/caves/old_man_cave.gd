@@ -59,10 +59,6 @@ func _ready() -> void:
 	center_camera()
 	position_player_at_entrance()
 
-	# Hide sword pickup until dialogue completes
-	if sword_pickup:
-		sword_pickup.visible = false
-
 	# Give old man reference to player
 	if old_man and old_man.has_method("set_player"):
 		old_man.set_player(player)
@@ -187,6 +183,7 @@ func show_sword_pickup() -> void:
 	## Called by OldMan after dialogue completes
 	if sword_pickup:
 		sword_pickup.visible = true
+		sword_pickup.monitoring = true
 
 
 # =============================================================================

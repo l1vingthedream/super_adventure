@@ -30,7 +30,6 @@ position = Vector2(80, 72)
 position = Vector2(176, 72)
 
 [node name="SwordPickup" parent="." instance=ExtResource("8_sword")]
-visible = false
 position = Vector2(128, 88)
 
 [node name="DialogueBox" parent="." instance=ExtResource("7_dialogue")]
