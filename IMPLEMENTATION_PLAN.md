@@ -151,7 +151,7 @@ queue_free()
 - [ ] Magical Shield (block more projectiles)
 
 ### 4.3 Usable Items (B Button)
-- [ ] Bombs - place, timer, explosion, destroy cracked walls
+- [x] Bombs - place, timer, explosion, destroy cracked walls
 - [ ] Bow & Arrow - ranged attack, costs rupee per shot
 - [ ] Boomerang - stuns enemies, retrieves items
 - [ ] Candle - burn bushes, light dark rooms
