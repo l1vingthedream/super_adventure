@@ -1,0 +1,46 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/Player_Sprites.png" id="1_sprites"]
+[ext_resource type="Script" path="res://scripts/items/bomb_explosion.gd" id="2_script"]
+
+[sub_resource type="AtlasTexture" id="explode_1"]
+atlas = ExtResource("1_sprites")
+region = Rect2(138, 185, 16, 16)
+
+[sub_resource type="AtlasTexture" id="explode_2"]
+atlas = ExtResource("1_sprites")
+region = Rect2(155, 185, 16, 16)
+
+[sub_resource type="AtlasTexture" id="explode_3"]
+atlas = ExtResource("1_sprites")
+region = Rect2(172, 185, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_explode"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("explode_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("explode_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("explode_3")
+}],
+"loop": false,
+"name": &"explode",
+"speed": 8.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_explosion"]
+radius = 24.0
+
+[node name="BombExplosion" type="Area2D"]
+script = ExtResource("2_script")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_explode")
+animation = &"explode"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_explosion")

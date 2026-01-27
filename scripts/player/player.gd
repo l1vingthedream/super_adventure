@@ -15,6 +15,10 @@ const MOVE_SPEED := 90.0  # pixels per second
 # Attack cooldown duration (NES Zelda feel)
 const ATTACK_COOLDOWN_DURATION := 0.15  # seconds
 
+# Bomb placement constants
+const BOMB_COOLDOWN_DURATION := 0.5  # seconds between placements
+const MAX_ACTIVE_BOMBS := 2  # max bombs on screen
+
 # Health system constants
 const INVINCIBILITY_DURATION := 1.0  # seconds of invincibility after hit
 const KNOCKBACK_SPEED := 150.0  # pixels/sec
@@ -40,6 +44,7 @@ var facing := Direction.DOWN
 var is_moving := false
 var is_attacking := false
 var attack_cooldown := 0.0  # Time remaining before next attack allowed
+var bomb_cooldown := 0.0  # Time remaining before next bomb allowed
 var subpixel_position := Vector2.ZERO  # Tracks true position for physics
 
 # Health state
@@ -102,6 +107,10 @@ func _physics_process(delta: float) -> void:
 	if attack_cooldown > 0:
 		attack_cooldown -= delta
 
+	# Update bomb cooldown
+	if bomb_cooldown > 0:
+		bomb_cooldown -= delta
+
 	# Lock input during screen transitions
 	if screen_manager.is_transitioning:
 		velocity = Vector2.ZERO
@@ -113,6 +122,10 @@ func _physics_process(delta: float) -> void:
 	# Handle attack input (requires cooldown to be finished)
 	if Input.is_action_just_pressed("attack") and not is_attacking and attack_cooldown <= 0:
 		start_attack()
+
+	# Handle use_item input (B-button equivalent)
+	if Input.is_action_just_pressed("use_item") and not is_attacking:
+		_use_equipped_item()
 
 	# Don't allow movement during attack
 	if is_attacking:
@@ -447,3 +460,39 @@ func _update_death_frame() -> void:
 			sprite.animation = "walk_side"
 			sprite.frame = 0
 			sprite.flip_h = true
+
+
+# =============================================================================
+# Item Use System
+# =============================================================================
+
+func _use_equipped_item() -> void:
+	## Use the currently equipped item (bombs, boomerang, etc.)
+	match GameManager.equipped_item:
+		GameManager.Item.BOMBS:
+			_place_bomb()
+		# Future items: BOOMERANG, BOW, etc.
+
+
+func _place_bomb() -> void:
+	## Place a bomb at player position
+	# Check cooldown
+	if bomb_cooldown > 0:
+		return
+
+	# Check bomb count
+	if not GameManager.use_bomb():
+		return  # No bombs available
+
+	# Check max active bombs
+	var active_bombs := get_tree().get_nodes_in_group("bombs")
+	if active_bombs.size() >= MAX_ACTIVE_BOMBS:
+		return
+
+	# Place bomb at player position
+	var bomb = preload("res://scenes/items/bomb.tscn").instantiate()
+	bomb.global_position = global_position
+	get_parent().add_child(bomb)
+
+	# Start cooldown
+	bomb_cooldown = BOMB_COOLDOWN_DURATION
