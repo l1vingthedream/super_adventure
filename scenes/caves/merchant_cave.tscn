@@ -1,0 +1,56 @@
+[gd_scene load_steps=9 format=3 uid="uid://merchant_cave_scene"]
+
+[ext_resource type="Script" path="res://scripts/caves/merchant_cave.gd" id="1_cave_script"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://cs4hqr5dxfbya" path="res://scenes/ui/hud.tscn" id="3_hud"]
+[ext_resource type="PackedScene" uid="uid://bpausemenuscene" path="res://scenes/ui/pause_menu.tscn" id="4_pause"]
+[ext_resource type="PackedScene" uid="uid://merchant_npc_scene" path="res://scenes/npcs/merchant.tscn" id="5_merchant"]
+[ext_resource type="PackedScene" uid="uid://cave_fire_scene" path="res://scenes/npcs/cave_fire.tscn" id="6_fire"]
+[ext_resource type="PackedScene" uid="uid://dialogue_box_scene" path="res://scenes/ui/dialogue_box.tscn" id="7_dialogue"]
+[ext_resource type="PackedScene" uid="uid://shop_item_scene" path="res://scenes/items/shop_item.tscn" id="8_shop_item"]
+
+[node name="MerchantCave" type="Node2D"]
+script = ExtResource("1_cave_script")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(128, 60)
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(128, 160)
+
+[node name="Merchant" parent="." instance=ExtResource("5_merchant")]
+position = Vector2(128, 72)
+
+[node name="FireLeft" parent="." instance=ExtResource("6_fire")]
+position = Vector2(80, 72)
+
+[node name="FireRight" parent="." instance=ExtResource("6_fire")]
+position = Vector2(176, 72)
+
+[node name="ShopItems" type="Node2D" parent="."]
+
+[node name="ShieldItem" parent="ShopItems" instance=ExtResource("8_shop_item")]
+position = Vector2(88, 96)
+item_type = "shield"
+price = 130
+quantity = 1
+
+[node name="BombsItem" parent="ShopItems" instance=ExtResource("8_shop_item")]
+position = Vector2(128, 96)
+item_type = "bombs"
+price = 20
+quantity = 5
+
+[node name="ArrowsItem" parent="ShopItems" instance=ExtResource("8_shop_item")]
+position = Vector2(168, 96)
+item_type = "arrows"
+price = 80
+quantity = 10
+
+[node name="DialogueBox" parent="." instance=ExtResource("7_dialogue")]
+
+[node name="HUD" parent="." instance=ExtResource("3_hud")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("4_pause")]

@@ -113,6 +113,7 @@ func _ready() -> void:
 	GameManager.keys_changed.connect(_on_keys_changed)
 	GameManager.bombs_changed.connect(_on_bombs_changed)
 	GameManager.sword_changed.connect(_on_sword_changed)
+	GameManager.equipped_item_changed.connect(_on_equipped_item_changed)
 
 	# Initialize counter displays with current values
 	_on_rupees_changed(GameManager.rupees)
@@ -121,6 +122,9 @@ func _ready() -> void:
 
 	# Initialize sword display based on current state
 	_on_sword_changed(GameManager.current_sword)
+
+	# Initialize B-slot display with current equipped item
+	_on_equipped_item_changed(GameManager._item_to_string(GameManager.equipped_item))
 
 
 func _process(delta: float) -> void:
@@ -360,3 +364,8 @@ func _on_sword_changed(sword_type: GameManager.Sword) -> void:
 			set_a_slot_item("magic_sword")
 		_:
 			set_a_slot_item("none")
+
+
+func _on_equipped_item_changed(item_name: String) -> void:
+	## Update B slot display when equipped item changes
+	set_b_slot_item(item_name)

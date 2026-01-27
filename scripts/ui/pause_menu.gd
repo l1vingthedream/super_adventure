@@ -34,12 +34,11 @@ const NUMBER_REGIONS := [
 const X_REGION := Rect2(519, 117, 8, 8)  # "X" prefix for counters
 
 # Sword display configuration (left side of inventory frame)
-const SWORD_SLOT_POS := Vector2(68, 33)  # Position in inventory frame
-# Sword sprites will be loaded from items_weapons.png
-const ITEMS_TEXTURE_PATH := "res://assets/items_weapons.png"
-const WOODEN_SWORD_REGION := Rect2(72, 0, 8, 16)
-const WHITE_SWORD_REGION := Rect2(80, 0, 8, 16)  # Placeholder
-const MAGICAL_SWORD_REGION := Rect2(88, 0, 8, 16)  # Placeholder
+const SWORD_SLOT_POS := Vector2(68, 49)  # Position in inventory frame
+# Sword sprites from HUDs.png (same as hud.gd)
+const WOODEN_SWORD_REGION := Rect2(555, 137, 8, 16)
+const WHITE_SWORD_REGION := Rect2(564, 137, 8, 16)
+const MAGICAL_SWORD_REGION := Rect2(573, 137, 8, 16)
 
 # HUD section offset (bottom panel starts at y=176)
 const HUD_SECTION_Y := 176
@@ -136,7 +135,6 @@ var current_screen := Vector2i(7, 7)  # Default screen position
 var inventory_item_sprites: Dictionary = {}  # item_name -> Sprite2D
 
 # Sword display
-var items_texture: Texture2D
 var sword_sprite: Sprite2D
 
 
@@ -146,7 +144,6 @@ func _ready() -> void:
 	visible = false
 
 	hud_texture = load(HUD_TEXTURE_PATH)
-	items_texture = load(ITEMS_TEXTURE_PATH)
 	_build_menu_structure()
 
 	# Connect to GameManager signals
@@ -192,7 +189,7 @@ func _build_menu_structure() -> void:
 
 	# Sword display sprite (left side of inventory)
 	sword_sprite = Sprite2D.new()
-	sword_sprite.texture = items_texture
+	sword_sprite.texture = hud_texture
 	sword_sprite.region_enabled = true
 	sword_sprite.centered = false
 	sword_sprite.position = SWORD_SLOT_POS
@@ -516,8 +513,7 @@ func _get_item_region(item_name: String) -> Rect2:
 func _player_owns_item(item_name: String) -> bool:
 	## Check if player owns the given item
 	var item := _string_to_item(item_name)
-	var owns := item != GameManager.Item.NONE and item in GameManager.owned_items
-	return owns
+	return item != GameManager.Item.NONE and item in GameManager.owned_items
 
 
 func _string_to_item(item_name: String) -> GameManager.Item:

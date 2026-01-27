@@ -118,6 +118,8 @@ queue_free()
 - [x] Inventory grid display
 - [x] Item selection for B slot
 - [x] Collected items tracking
+- [x] Fix sword sprite display (was showing rupee icon due to wrong texture/region)
+- [x] Fix sword sprite position (moved down 16 pixels to y=49)
 - [ ] Dungeon map display (when acquired)
 
 ### 3.3 Screen Overlays
@@ -198,18 +200,18 @@ queue_free()
 - [ ] Cave interior scenes
 
 ### 6.2 Cave Types
-- [ ] Shop - buy items with rupees
-- [ ] Item gift - "It's dangerous to go alone"
+- [x] Shop - buy items with rupees (merchant cave with bombs, arrows, shield)
+- [x] Item gift - "It's dangerous to go alone" (old man cave with wooden sword)
 - [ ] Heart container location
 - [ ] Rupee room (pay or take)
 - [ ] Hint NPC
 - [ ] Gambling game
 
 ### 6.3 NPC Dialogue
-- [ ] Dialogue box UI
-- [ ] Text display system
-- [ ] NPC interaction trigger
-- [ ] Shop purchase logic
+- [x] Dialogue box UI
+- [x] Text display system
+- [x] NPC interaction trigger
+- [x] Shop purchase logic (touch-to-buy system)
 
 ---
 
