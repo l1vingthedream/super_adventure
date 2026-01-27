@@ -53,7 +53,7 @@ var cave_entrances := {
 		"destination": "res://scenes/caves/white_sword_cave.tscn"
 	},
 	Vector2i(15, 6): {  # Merchant cave screen (col=15, row=6)
-		"tile": Vector2i(3, 2),  # Tile col=3, row=2
+		"tile": Vector2i(3, 1),  # Tile col=3, row=1
 		"destination": "res://scenes/caves/merchant_cave.tscn"
 	}
 }
@@ -363,12 +363,34 @@ func _spawn_enemies_for_screen(screen: Vector2i) -> void:
 		_spawn_octorok(Vector2(screen_left + 80, screen_top + 60))
 		_spawn_octorok(Vector2(screen_left + 176, screen_top + 100))
 
+	# Spawn 4 red Tektites on screen (6, 7)
+	if screen == Vector2i(6, 7):
+		_spawn_tektite(Vector2(screen_left + 64, screen_top + 48), Tektite.TektiteColor.RED)
+		_spawn_tektite(Vector2(screen_left + 192, screen_top + 48), Tektite.TektiteColor.RED)
+		_spawn_tektite(Vector2(screen_left + 64, screen_top + 128), Tektite.TektiteColor.RED)
+		_spawn_tektite(Vector2(screen_left + 192, screen_top + 128), Tektite.TektiteColor.RED)
+
+	# Spawn 4 blue Tektites on screen (9, 7)
+	if screen == Vector2i(9, 7):
+		_spawn_tektite(Vector2(screen_left + 64, screen_top + 48), Tektite.TektiteColor.BLUE)
+		_spawn_tektite(Vector2(screen_left + 192, screen_top + 48), Tektite.TektiteColor.BLUE)
+		_spawn_tektite(Vector2(screen_left + 64, screen_top + 128), Tektite.TektiteColor.BLUE)
+		_spawn_tektite(Vector2(screen_left + 192, screen_top + 128), Tektite.TektiteColor.BLUE)
+
 
 func _spawn_octorok(pos: Vector2) -> void:
 	## Spawn an Octorok at the given position
 	var octorok = preload("res://scenes/enemies/octorok.tscn").instantiate()
 	octorok.global_position = pos
 	enemies_container.add_child(octorok)
+
+
+func _spawn_tektite(pos: Vector2, tektite_color: Tektite.TektiteColor) -> void:
+	## Spawn a Tektite at the given position with the specified color
+	var tektite = preload("res://scenes/enemies/tektite.tscn").instantiate()
+	tektite.color = tektite_color
+	tektite.global_position = pos
+	enemies_container.add_child(tektite)
 
 
 func _clear_enemies() -> void:

@@ -166,7 +166,7 @@ queue_free()
 
 ### 5.1 Overworld Enemies
 - [x] Octorok (red/blue) - walks, shoots rocks
-- [ ] Tektite (red/blue) - hops randomly
+- [x] Tektite (red/blue) - hops randomly
 - [ ] Leever (red/blue) - emerges from sand
 - [ ] Peahat - flies, invulnerable while moving
 - [ ] Moblin (red/blue) - walks, throws spears
