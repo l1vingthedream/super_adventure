@@ -167,13 +167,14 @@ queue_free()
 ### 5.1 Overworld Enemies
 - [x] Octorok (red/blue) - walks, shoots rocks
 - [x] Tektite (red/blue) - hops randomly
-- [ ] Leever (red/blue) - emerges from sand
-- [ ] Peahat - flies, invulnerable while moving
+- [x] Leever (red/blue) - emerges from sand
+- [x] Peahat - flies, invulnerable while moving
 - [ ] Moblin (red/blue) - walks, throws spears
 - [ ] Armos - statue, activates when touched
 - [ ] Lynel (red/blue) - walks, shoots sword beams
 - [ ] Zora - emerges from water, shoots fireballs
-- [ ] Rock - falls from mountains
+- [x] Rock - falls from mountains
+- [x] Ghini - gliding ghost
 
 ### 5.2 Enemy Behaviors
 - [ ] Pathfinding (simple 4-direction)

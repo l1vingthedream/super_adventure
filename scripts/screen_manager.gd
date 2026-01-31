@@ -38,6 +38,14 @@ var walkable_tiles: Array = []  # Tile IDs that player can walk through
 # Enemy spawning
 var enemies_container: Node2D
 
+# Rock spawner
+var rock_spawn_timer := 0.0
+var rock_spawn_interval := 0.0
+var is_rock_screen := false
+const ROCK_SPAWN_MIN := 0.8
+const ROCK_SPAWN_MAX := 2.0
+const ROCK_SCREENS := [Vector2i(5, 1), Vector2i(6, 1)]  # Mountain screens
+
 # HUD reference
 var hud: CanvasLayer
 
@@ -313,6 +321,13 @@ func transition_to_screen(new_screen: Vector2i) -> void:
 
 
 func _process(delta: float) -> void:
+	# Rock spawner
+	if is_rock_screen and not is_transitioning:
+		rock_spawn_timer -= delta
+		if rock_spawn_timer <= 0:
+			_spawn_falling_rock()
+			rock_spawn_timer = randf_range(ROCK_SPAWN_MIN, ROCK_SPAWN_MAX)
+
 	if is_transitioning:
 		var direction := (transition_target - camera.position).normalized()
 		var distance := camera.position.distance_to(transition_target)
@@ -350,6 +365,11 @@ func _spawn_enemies_for_screen(screen: Vector2i) -> void:
 	## Clear existing enemies and spawn new ones for the given screen
 	_clear_enemies()
 
+	# Check if this is a rock-spawning screen
+	is_rock_screen = screen in ROCK_SCREENS
+	if is_rock_screen:
+		rock_spawn_timer = randf_range(0.5, 1.0)  # Short initial delay
+
 	# Calculate screen bounds for spawning
 	var screen_left := screen.x * SCREEN_WIDTH_PX
 	var screen_top := screen.y * SCREEN_HEIGHT_PX
@@ -377,6 +397,65 @@ func _spawn_enemies_for_screen(screen: Vector2i) -> void:
 		_spawn_tektite(Vector2(screen_left + 64, screen_top + 128), Tektite.TektiteColor.BLUE)
 		_spawn_tektite(Vector2(screen_left + 192, screen_top + 128), Tektite.TektiteColor.BLUE)
 
+	# Spawn Ghinis on graveyard screens
+	if screen == Vector2i(0, 2):
+		_spawn_ghini(Vector2(screen_left + 64, screen_top + 64))
+		_spawn_ghini(Vector2(screen_left + 192, screen_top + 96))
+		_spawn_ghini(Vector2(screen_left + 128, screen_top + 128))
+	if screen == Vector2i(0, 3):
+		_spawn_ghini(Vector2(screen_left + 80, screen_top + 56))
+		_spawn_ghini(Vector2(screen_left + 176, screen_top + 112))
+		_spawn_ghini(Vector2(screen_left + 128, screen_top + 80))
+	if screen == Vector2i(0, 4):
+		_spawn_ghini(Vector2(screen_left + 96, screen_top + 72))
+		_spawn_ghini(Vector2(screen_left + 160, screen_top + 120))
+	if screen == Vector2i(1, 2):
+		_spawn_ghini(Vector2(screen_left + 64, screen_top + 88))
+		_spawn_ghini(Vector2(screen_left + 192, screen_top + 64))
+		_spawn_ghini(Vector2(screen_left + 128, screen_top + 128))
+	if screen == Vector2i(1, 3):
+		_spawn_ghini(Vector2(screen_left + 80, screen_top + 64))
+		_spawn_ghini(Vector2(screen_left + 176, screen_top + 104))
+	if screen == Vector2i(1, 4):
+		_spawn_ghini(Vector2(screen_left + 96, screen_top + 72))
+		_spawn_ghini(Vector2(screen_left + 192, screen_top + 112))
+		_spawn_ghini(Vector2(screen_left + 128, screen_top + 56))
+
+	# Spawn Leevers on desert/sand screens
+	if screen == Vector2i(11, 7):
+		_spawn_leever(Vector2(screen_left + 80, screen_top + 64), Leever.LeeverColor.RED)
+		_spawn_leever(Vector2(screen_left + 176, screen_top + 112), Leever.LeeverColor.RED)
+		_spawn_leever(Vector2(screen_left + 128, screen_top + 88), Leever.LeeverColor.RED)
+	if screen == Vector2i(12, 7):
+		_spawn_leever(Vector2(screen_left + 64, screen_top + 72), Leever.LeeverColor.RED)
+		_spawn_leever(Vector2(screen_left + 192, screen_top + 96), Leever.LeeverColor.RED)
+	if screen == Vector2i(13, 7):
+		_spawn_leever(Vector2(screen_left + 96, screen_top + 80), Leever.LeeverColor.BLUE)
+		_spawn_leever(Vector2(screen_left + 160, screen_top + 104), Leever.LeeverColor.BLUE)
+		_spawn_leever(Vector2(screen_left + 64, screen_top + 56), Leever.LeeverColor.BLUE)
+	if screen == Vector2i(1, 7):
+		_spawn_leever(Vector2(screen_left + 80, screen_top + 72), Leever.LeeverColor.RED)
+		_spawn_leever(Vector2(screen_left + 176, screen_top + 96), Leever.LeeverColor.RED)
+
+	# Spawn Peahats
+	if screen == Vector2i(5, 7):
+		_spawn_peahat(Vector2(screen_left + 64, screen_top + 64))
+		_spawn_peahat(Vector2(screen_left + 192, screen_top + 112))
+		_spawn_peahat(Vector2(screen_left + 128, screen_top + 80))
+	if screen == Vector2i(4, 7):
+		_spawn_peahat(Vector2(screen_left + 96, screen_top + 56))
+		_spawn_peahat(Vector2(screen_left + 160, screen_top + 120))
+	if screen == Vector2i(0, 7):
+		_spawn_peahat(Vector2(screen_left + 80, screen_top + 72))
+		_spawn_peahat(Vector2(screen_left + 176, screen_top + 104))
+	if screen == Vector2i(0, 6):
+		_spawn_peahat(Vector2(screen_left + 64, screen_top + 64))
+		_spawn_peahat(Vector2(screen_left + 192, screen_top + 112))
+		_spawn_peahat(Vector2(screen_left + 128, screen_top + 88))
+	if screen == Vector2i(9, 5):
+		_spawn_peahat(Vector2(screen_left + 96, screen_top + 60))
+		_spawn_peahat(Vector2(screen_left + 160, screen_top + 116))
+
 
 func _spawn_octorok(pos: Vector2) -> void:
 	## Spawn an Octorok at the given position
@@ -391,6 +470,40 @@ func _spawn_tektite(pos: Vector2, tektite_color: Tektite.TektiteColor) -> void:
 	tektite.color = tektite_color
 	tektite.global_position = pos
 	enemies_container.add_child(tektite)
+
+
+func _spawn_peahat(pos: Vector2) -> void:
+	## Spawn a Peahat at the given position
+	var peahat = preload("res://scenes/enemies/peahat.tscn").instantiate()
+	peahat.global_position = pos
+	enemies_container.add_child(peahat)
+
+
+func _spawn_leever(pos: Vector2, leever_color: Leever.LeeverColor) -> void:
+	## Spawn a Leever at the given position with the specified color
+	var leever = preload("res://scenes/enemies/leever.tscn").instantiate()
+	leever.color = leever_color
+	leever.global_position = pos
+	enemies_container.add_child(leever)
+
+
+func _spawn_ghini(pos: Vector2) -> void:
+	## Spawn a Ghini at the given position
+	var ghini = preload("res://scenes/enemies/ghini.tscn").instantiate()
+	ghini.global_position = pos
+	enemies_container.add_child(ghini)
+
+
+func _spawn_falling_rock() -> void:
+	## Spawn a rock at a random X position at the top of the current screen
+	var rock = preload("res://scenes/enemies/rock.tscn").instantiate()
+	var screen_left := current_screen.x * SCREEN_WIDTH_PX
+	var screen_top := current_screen.y * SCREEN_HEIGHT_PX
+	var rand_x := screen_left + randf_range(16.0, 240.0)
+	rock.global_position = Vector2(rand_x, screen_top - 8.0)
+	rock.spawn_screen_top = screen_top
+	rock.spawn_screen_left = screen_left
+	enemies_container.add_child(rock)
 
 
 func _clear_enemies() -> void:

@@ -1,0 +1,42 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/adventure_enemies.png" id="1_enemies"]
+[ext_resource type="Script" path="res://scripts/enemies/rock.gd" id="2_script"]
+
+[sub_resource type="AtlasTexture" id="rock_frame_1"]
+atlas = ExtResource("1_enemies")
+region = Rect2(210, 59, 16, 16)
+
+[sub_resource type="AtlasTexture" id="rock_frame_2"]
+atlas = ExtResource("1_enemies")
+region = Rect2(227, 59, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_rock"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("rock_frame_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("rock_frame_2")
+}],
+"loop": true,
+"name": &"spin",
+"speed": 8.0
+}]
+
+[sub_resource type="RectangleShape2D" id="collision_shape"]
+size = Vector2(12, 12)
+
+[node name="Rock" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("2_script")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_rock")
+animation = &"spin"
+autoplay = "spin"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("collision_shape")
