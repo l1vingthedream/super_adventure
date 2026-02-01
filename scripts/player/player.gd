@@ -67,6 +67,9 @@ func _ready() -> void:
 	if DEBUG_SLOW_MOTION:
 		Engine.time_scale = DEBUG_TIME_SCALE
 
+	# Make sword hitbox shape unique so resizing doesn't affect the resource
+	sword_hitbox.shape = sword_hitbox.shape.duplicate()
+
 	sprite.animation_finished.connect(_on_animation_finished)
 	sprite.frame_changed.connect(_on_frame_changed)
 	update_animation()
@@ -291,6 +294,8 @@ func _on_frame_changed() -> void:
 
 func update_sword_position(sword_frame: int) -> void:
 	var sword_anim: String
+	var sprite_w := 0.0
+	var sprite_h := 0.0
 
 	# Positions calculated for centered=false (top-left origin)
 	# Formula: new_pos = old_centered_pos - (width/2, height/2)
@@ -300,28 +305,49 @@ func update_sword_position(sword_frame: int) -> void:
 			sword_anim = "sword_down"
 			sword_sprite.flip_h = false
 			# Sprite sizes: 8x11, 8x7, 8x3
+			var down_w := [8.0, 8.0, 8.0]
+			var down_h := [11.0, 7.0, 3.0]
 			var down_sword_x := [-3, -3, -3]
 			var down_sword_y := [8, 8, 7]
 			sword.position = Vector2(down_sword_x[sword_frame], down_sword_y[sword_frame])
+			sprite_w = down_w[sword_frame]
+			sprite_h = down_h[sword_frame]
 		Direction.UP:
 			sword_anim = "sword_up"
 			sword_sprite.flip_h = false
 			# Sprite sizes: 8x12, 8x12, 8x3
+			var up_w := [8.0, 8.0, 8.0]
+			var up_h := [12.0, 12.0, 3.0]
 			var up_sword_x := [-5, -5, -5]
 			var up_sword_y := [-20, -20, -11]
 			sword.position = Vector2(up_sword_x[sword_frame], up_sword_y[sword_frame])
+			sprite_w = up_w[sword_frame]
+			sprite_h = up_h[sword_frame]
 		Direction.LEFT:
 			sword_anim = "sword_side"
 			sword_sprite.flip_h = true
 			# Sprite sizes: 11x16, 7x16, 3x16 (flip_h extends left from position)
+			var left_w := [11.0, 7.0, 3.0]
+			var left_h := [16.0, 16.0, 16.0]
 			var left_sword_x := [-19, -15, -11]  # -8 - width for each frame
 			sword.position = Vector2(left_sword_x[sword_frame], -7)
+			sprite_w = left_w[sword_frame]
+			sprite_h = left_h[sword_frame]
 		Direction.RIGHT:
 			sword_anim = "sword_side"
 			sword_sprite.flip_h = false
 			# Sprite sizes: 11x16, 7x16, 3x16
+			var right_w := [11.0, 7.0, 3.0]
+			var right_h := [16.0, 16.0, 16.0]
 			var right_sword_x := [8, 8, 8]
 			sword.position = Vector2(right_sword_x[sword_frame], -7)
+			sprite_w = right_w[sword_frame]
+			sprite_h = right_h[sword_frame]
+
+	# Update hitbox to match sprite: centered=false means sprite draws from (0,0) to (w,h)
+	# CollisionShape2D is centered, so offset it to the sprite's center
+	sword_hitbox.shape.size = Vector2(sprite_w, sprite_h)
+	sword_hitbox.position = Vector2(sprite_w / 2.0, sprite_h / 2.0)
 
 	if sword_sprite.sprite_frames and sword_sprite.sprite_frames.has_animation(sword_anim):
 		sword_sprite.animation = sword_anim
