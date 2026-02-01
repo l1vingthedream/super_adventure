@@ -211,7 +211,7 @@ queue_free()
 ## Phase 6: Overworld Secrets
 
 ### 6.1 Hidden Caves
-- [ ] Bombable walls (cracked rock tiles)
+- [x] Bombable walls (cracked rock tiles)
 - [ ] Burnable bushes (specific bush tiles)
 - [ ] Push-able blocks (Armos statues)
 - [ ] Staircase entrances
@@ -220,7 +220,7 @@ queue_free()
 ### 6.2 Cave Types
 - [x] Shop - buy items with rupees (merchant cave with bombs, arrows, shield)
 - [x] Item gift - "It's dangerous to go alone" (old man cave with wooden sword)
-- [ ] Heart container location
+- [x] Heart container location
 - [ ] Rupee room (pay or take)
 - [ ] Hint NPC
 - [ ] Gambling game
