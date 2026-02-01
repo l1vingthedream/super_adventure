@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/potion_pickup.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/items_weapons.png" id="2_items_texture"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pickup"]
+size = Vector2(8, 14)
+
+[node name="PotionPickup" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_items_texture")
+region_enabled = true
+region_rect = Rect2(80, 0, 8, 16)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_pickup")
