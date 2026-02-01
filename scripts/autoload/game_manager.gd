@@ -75,6 +75,10 @@ var cave_exit_tile := Vector2i(4, 1)  # Tile position within screen (0-based)
 var has_purchased_bombs := false  # Unlocks bomb drops from enemies
 var has_shield := false  # Player owns a shield
 
+# Debug state
+var debug_invincible := false
+var debug_warp_menu: Node = null
+
 
 func _ready() -> void:
 	# Allow processing even when game is paused (for pause toggle)
@@ -134,6 +138,16 @@ func _unhandled_input(event: InputEvent) -> void:
 					if player.has_signal("health_changed"):
 						player.health_changed.emit(player.health, player.max_health)
 					print("DEBUG: Added 3 heart containers. Max health: ", player.max_health)
+			KEY_8:
+				var sm = get_tree().current_scene
+				if sm and sm.has_method("_spawn_enemies_for_screen") and "current_screen" in sm:
+					sm._spawn_enemies_for_screen(sm.current_screen)
+					print("DEBUG: Respawned enemies on screen ", sm.current_screen)
+			KEY_9:
+				debug_invincible = not debug_invincible
+				print("DEBUG: God mode ", "ON" if debug_invincible else "OFF")
+			KEY_0:
+				_toggle_warp_menu()
 			KEY_7:
 				# Teleport to merchant cave screen (15, 6), tile (4, 4)
 				var screen_manager = get_tree().current_scene
@@ -257,3 +271,13 @@ func _item_to_string(item: Item) -> String:
 		Item.LETTER: return "letter"
 		Item.WAND: return "wand"
 	return "none"
+
+
+func _toggle_warp_menu() -> void:
+	if not debug_warp_menu:
+		debug_warp_menu = preload("res://scenes/ui/debug_warp_menu.tscn").instantiate()
+		add_child(debug_warp_menu)
+	if debug_warp_menu.is_open:
+		debug_warp_menu.close()
+	else:
+		debug_warp_menu.open()

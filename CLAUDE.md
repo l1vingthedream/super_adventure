@@ -51,7 +51,7 @@ enum Sword { NONE, WOODEN, WHITE, MAGICAL }
 | start    | Enter       | Start/confirm            |
 
 ### Debug Keys (when DEBUG_INPUTS_ENABLED = true)
-1=+10 rupees, 2=+1 key, 3=+1 bomb, 4=all items, 5=+5 arrows, 6=+3 hearts, 7=teleport to merchant
+1=+10 rupees, 2=+1 key, 3=+1 bomb, 4=all items, 5=+5 arrows, 6=+3 hearts, 7=teleport to merchant, 8=respawn enemies, 9=god mode toggle, 0=warp menu
 
 ---
 
@@ -209,6 +209,90 @@ if screen == Vector2i(col, row):
 - Screen origin = `Vector2(screen.x * 256, screen.y * 176)`
 - Safe spawn area: X in 32..224, Y in 32..144 (avoid edges)
 - Typical: 2-4 enemies per screen
+
+---
+
+## Recipe: Add a New B-Item (Usable Item)
+
+### 1. Script (scripts/items/my_item.gd)
+Follow the bomb pattern in `scripts/items/bomb.gd`.
+
+### 2. Scene (scenes/items/my_item.tscn)
+Node tree depends on item behavior. See bomb.tscn for a placed-object item.
+
+### 3. Wire into player.gd
+In `_use_equipped_item()` (line ~469), add a match case:
+```gdscript
+GameManager.Item.BOW:
+    _shoot_arrow()
+```
+Then add the corresponding method below `_place_bomb()`.
+
+### 4. Wire into game_manager.gd
+- Item enum at line 25 already has entries (BOOMERANG, BOW, CANDLE, etc.)
+- If your item needs ammo, use existing `use_arrow()` / `add_arrows()` pattern
+- Call `GameManager.acquire_item(GameManager.Item.BOW)` when player obtains it
+
+### 5. Wire into pause_menu.gd
+Item should appear in inventory grid when owned. Check pause_menu.gd item display logic.
+
+---
+
+## When the User Reports a Bug
+
+1. **Read the relevant script file(s) FIRST** before suggesting fixes
+2. Check for these common issues:
+   - Sprite region/offset calculations (sprites are 16x16 tiles)
+   - Area2D group membership (enemies must be in "enemies" group via `add_to_group()` in `_ready()`)
+   - Signal connections (check both emit and connect sides)
+   - Collision layers/masks mismatch (see table above)
+   - Preload paths (must start with `res://`)
+   - Properties set AFTER `add_child()` instead of before
+3. **Make ONE targeted fix at a time** — don't refactor surrounding code
+4. After fixing, explain what to look for when testing
+5. If the user provides Godot console output or screenshots, use those as primary evidence
+
+---
+
+## Branching Workflow (for parallel Claude instances)
+
+If another Claude instance is running on this project:
+1. Check branch: `git branch --show-current`
+2. If on `main` and another instance is also on `main` editing the same files, create a branch:
+   `git checkout -b feature/<descriptive-name>`
+3. When done, tell the user the branch is ready to merge
+
+If working alone on `main`, no branch needed.
+
+---
+
+## Testing After Implementation
+
+After implementing a feature, recommend the following to the user:
+
+### 1. Godot Console Output
+Run the game from terminal to capture logs for debugging:
+```bash
+/Applications/Godot.app/Contents/MacOS/Godot --path /Users/michaelbegic/devprojects/super_adventure 2>&1 | tee /tmp/godot_output.txt
+```
+If the user reports a bug, ask them to share `/tmp/godot_output.txt` so you can read the exact errors and stack traces.
+
+### 2. Screenshots
+The user can paste screenshots or provide file paths to screenshots of visual bugs. Use these as primary evidence — they're faster and more accurate than text descriptions.
+
+### 3. Automated Script Validation
+A PostToolUse hook automatically runs Godot headless after `git commit` to catch GDScript parse errors. If errors are reported, fix them before continuing.
+
+### 4. What to Tell the User to Test
+After each feature, give the user a specific test checklist, e.g.:
+- "Navigate to screen (6,7) and verify 4 red Tektites spawn"
+- "Walk into an enemy and confirm you take damage with knockback"
+- "Press Z to use the equipped item and confirm it fires"
+- "Press Escape to open pause menu and verify the new item appears in inventory"
+
+### 5. Debug Keys
+Remind the user of debug keys when relevant:
+- `1`=+10 rupees, `2`=+1 key, `3`=+1 bomb, `4`=all items, `5`=+5 arrows, `6`=+3 hearts, `7`=teleport to merchant, `8`=respawn enemies, `9`=god mode toggle, `0`=warp menu
 
 ---
 

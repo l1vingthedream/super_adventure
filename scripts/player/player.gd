@@ -386,6 +386,8 @@ func take_damage(amount: int, from_position: Vector2) -> void:
 	## Apply damage to player, trigger invincibility and knockback
 	if is_dead or invincibility_timer > 0:
 		return
+	if GameManager.debug_invincible:
+		return
 
 	health -= amount
 	health = max(health, 0)

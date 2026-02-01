@@ -91,6 +91,11 @@ func _ready() -> void:
 	# Handle return from cave/interior
 	call_deferred("_handle_cave_return")
 
+	# Debug overlay
+	if GameManager.DEBUG_INPUTS_ENABLED:
+		var debug_hud = preload("res://scenes/ui/debug_hud.tscn").instantiate()
+		add_child(debug_hud)
+
 
 func load_collision_data() -> void:
 	## Load tile collision definitions from JSON
@@ -456,6 +461,38 @@ func _spawn_enemies_for_screen(screen: Vector2i) -> void:
 		_spawn_peahat(Vector2(screen_left + 96, screen_top + 60))
 		_spawn_peahat(Vector2(screen_left + 160, screen_top + 116))
 
+	# Spawn Moblins
+	if screen == Vector2i(8, 5):
+		_spawn_moblin(Vector2(screen_left + 80, screen_top + 64), Moblin.MoblinColor.RED)
+		_spawn_moblin(Vector2(screen_left + 176, screen_top + 112), Moblin.MoblinColor.RED)
+	if screen == Vector2i(10, 5):
+		_spawn_moblin(Vector2(screen_left + 64, screen_top + 72), Moblin.MoblinColor.BLUE)
+		_spawn_moblin(Vector2(screen_left + 192, screen_top + 96), Moblin.MoblinColor.BLUE)
+		_spawn_moblin(Vector2(screen_left + 128, screen_top + 56), Moblin.MoblinColor.BLUE)
+	if screen == Vector2i(1, 7):
+		_spawn_moblin(Vector2(screen_left + 80, screen_top + 72), Moblin.MoblinColor.BLUE)
+		_spawn_moblin(Vector2(screen_left + 176, screen_top + 104), Moblin.MoblinColor.BLUE)
+	if screen == Vector2i(2, 7):
+		_spawn_moblin(Vector2(screen_left + 64, screen_top + 64), Moblin.MoblinColor.BLUE)
+		_spawn_moblin(Vector2(screen_left + 192, screen_top + 112), Moblin.MoblinColor.BLUE)
+		_spawn_moblin(Vector2(screen_left + 128, screen_top + 88), Moblin.MoblinColor.BLUE)
+	if screen == Vector2i(3, 7):
+		_spawn_moblin(Vector2(screen_left + 96, screen_top + 56), Moblin.MoblinColor.BLUE)
+		_spawn_moblin(Vector2(screen_left + 160, screen_top + 120), Moblin.MoblinColor.BLUE)
+	if screen == Vector2i(1, 6):
+		_spawn_moblin(Vector2(screen_left + 80, screen_top + 80), Moblin.MoblinColor.BLUE)
+		_spawn_moblin(Vector2(screen_left + 176, screen_top + 96), Moblin.MoblinColor.BLUE)
+	if screen == Vector2i(2, 6):
+		_spawn_moblin(Vector2(screen_left + 64, screen_top + 68), Moblin.MoblinColor.BLUE)
+		_spawn_moblin(Vector2(screen_left + 192, screen_top + 108), Moblin.MoblinColor.BLUE)
+		_spawn_moblin(Vector2(screen_left + 128, screen_top + 80), Moblin.MoblinColor.BLUE)
+	if screen == Vector2i(1, 5):
+		_spawn_moblin(Vector2(screen_left + 96, screen_top + 64), Moblin.MoblinColor.BLUE)
+		_spawn_moblin(Vector2(screen_left + 160, screen_top + 112), Moblin.MoblinColor.BLUE)
+
+	# Scan for Armos statue tiles on this screen
+	_scan_armos_tiles(screen)
+
 
 func _spawn_octorok(pos: Vector2) -> void:
 	## Spawn an Octorok at the given position
@@ -470,6 +507,42 @@ func _spawn_tektite(pos: Vector2, tektite_color: Tektite.TektiteColor) -> void:
 	tektite.color = tektite_color
 	tektite.global_position = pos
 	enemies_container.add_child(tektite)
+
+
+const ARMOS_TILE_IDS := [25, 49, 78]  # 1-based Tiled IDs for Armos statue tiles
+
+func _scan_armos_tiles(screen: Vector2i) -> void:
+	## Scan the current screen for Armos tiles and spawn Armos enemies on them
+	var screen_tile_x := screen.x * SCREEN_WIDTH_TILES
+	var screen_tile_y := screen.y * SCREEN_HEIGHT_TILES
+
+	for ty in SCREEN_HEIGHT_TILES:
+		for tx in SCREEN_WIDTH_TILES:
+			var map_x := screen_tile_x + tx
+			var map_y := screen_tile_y + ty
+			var index := map_y * map_width + map_x
+			if index < map_data.size() and map_data[index] in ARMOS_TILE_IDS:
+				var world_pos := Vector2(map_x * TILE_SIZE + 8, map_y * TILE_SIZE + 8)
+				var armos = preload("res://scenes/enemies/armos.tscn").instantiate()
+				armos.global_position = world_pos
+				armos.tile_cell = Vector2i(map_x, map_y)
+				armos.activated.connect(_on_armos_activated)
+				enemies_container.add_child(armos)
+
+
+func _on_armos_activated(cell: Vector2i) -> void:
+	## Replace an activated Armos tile with the tile directly above it
+	var above_cell := Vector2i(cell.x, cell.y - 1)
+	var above_atlas := tilemap.get_cell_atlas_coords(above_cell)
+	tilemap.set_cell(cell, 0, above_atlas)
+
+
+func _spawn_moblin(pos: Vector2, moblin_color: Moblin.MoblinColor) -> void:
+	## Spawn a Moblin at the given position with the specified color
+	var moblin = preload("res://scenes/enemies/moblin.tscn").instantiate()
+	moblin.color = moblin_color
+	moblin.global_position = pos
+	enemies_container.add_child(moblin)
 
 
 func _spawn_peahat(pos: Vector2) -> void:
