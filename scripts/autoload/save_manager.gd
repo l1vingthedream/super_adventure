@@ -108,7 +108,8 @@ func create_new_save(slot: int, player_name: String) -> bool:
 		"screen_y": DEFAULT_SCREEN_Y,
 		"death_count": 0,
 		"owned_items": [],
-		"equipped_item": 0
+		"equipped_item": 0,
+		"revealed_tiles": []
 	}
 
 	save_to_disk()
@@ -164,6 +165,13 @@ func load_save(slot: int) -> bool:
 	if equipped >= 0 and equipped < GameManager.Item.size():
 		GameManager.equipped_item = equipped as GameManager.Item
 
+	# Restore revealed tiles
+	GameManager.revealed_tiles.clear()
+	var revealed: Array = data.get("revealed_tiles", [])
+	for key in revealed:
+		if key is String:
+			GameManager.revealed_tiles.append(key)
+
 	save_loaded.emit(slot)
 	print("SaveManager: Loaded save '%s' from slot %d" % [data.get("name", ""), slot])
 	return true
@@ -192,6 +200,9 @@ func save_game() -> void:
 		owned.append(int(item))
 	data["owned_items"] = owned
 	data["equipped_item"] = int(GameManager.equipped_item)
+
+	# Save revealed tiles
+	data["revealed_tiles"] = GameManager.revealed_tiles.duplicate()
 
 	# Save player position if available
 	var player := get_tree().get_first_node_in_group("player")

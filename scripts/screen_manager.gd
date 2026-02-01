@@ -66,6 +66,18 @@ var cave_entrances := {
 	}
 }
 
+# Bombable tile definitions: screen -> array of bombable tile data
+# Each entry: { tile: tile pos in screen, replacement: atlas coords, cave: destination (optional) }
+var bombable_tiles := {
+	Vector2i(11, 7): [
+		{
+			"tile": Vector2i(9, 1),
+			"replacement": Vector2i(8, 0),
+			"cave": "res://scenes/caves/secret_item_cave.tscn"
+		}
+	]
+}
+
 # Signal for cave transitions
 signal entering_cave(destination: String)
 
@@ -75,6 +87,7 @@ func _ready() -> void:
 	setup_tileset()
 	load_tilemap_data()
 	populate_tilemap()
+	_restore_revealed_tiles()
 	center_camera_on_screen(current_screen)
 
 	# Create container for enemies
@@ -509,7 +522,7 @@ func _spawn_tektite(pos: Vector2, tektite_color: Tektite.TektiteColor) -> void:
 	enemies_container.add_child(tektite)
 
 
-const ARMOS_TILE_IDS := [25, 49, 78]  # 1-based Tiled IDs for Armos statue tiles
+const ARMOS_TILE_IDS: Array[int] = [25, 49, 78]  # 1-based Tiled IDs for Armos statue tiles
 
 func _scan_armos_tiles(screen: Vector2i) -> void:
 	## Scan the current screen for Armos tiles and spawn Armos enemies on them
@@ -521,7 +534,7 @@ func _scan_armos_tiles(screen: Vector2i) -> void:
 			var map_x := screen_tile_x + tx
 			var map_y := screen_tile_y + ty
 			var index := map_y * map_width + map_x
-			if index < map_data.size() and map_data[index] in ARMOS_TILE_IDS:
+			if index < map_data.size() and int(map_data[index]) in ARMOS_TILE_IDS:
 				var world_pos := Vector2(map_x * TILE_SIZE + 8, map_y * TILE_SIZE + 8)
 				var armos = preload("res://scenes/enemies/armos.tscn").instantiate()
 				armos.global_position = world_pos
@@ -597,8 +610,6 @@ func check_cave_entrance(player_pos: Vector2) -> bool:
 
 	# Get current screen
 	var screen := get_screen_from_position(player_pos)
-	# DEBUG: Always print current screen
-	print("DEBUG check_cave_entrance - Current screen: ", screen)
 	if screen not in cave_entrances:
 		return false
 
@@ -606,9 +617,6 @@ func check_cave_entrance(player_pos: Vector2) -> bool:
 	var screen_origin := Vector2(screen.x * SCREEN_WIDTH_PX, screen.y * SCREEN_HEIGHT_PX)
 	var local_pos := player_pos - screen_origin
 	var tile_pos := Vector2i(int(local_pos.x / TILE_SIZE), int(local_pos.y / TILE_SIZE))
-
-	# Debug: see tile position
-	print("Screen: ", screen, " | Player tile pos: ", tile_pos, " | Cave entrance: ", cave_entrances[screen]["tile"])
 
 	# Check if on cave entrance tile
 	var cave_data: Dictionary = cave_entrances[screen]
@@ -623,6 +631,75 @@ func _enter_cave(destination: String) -> void:
 	## Transition to a cave scene
 	entering_cave.emit(destination)
 	get_tree().change_scene_to_file(destination)
+
+
+# =============================================================================
+# Bombable Tile Reveals
+# =============================================================================
+
+func try_bomb_reveal(explosion_pos: Vector2) -> void:
+	## Check if a bomb explosion reveals any hidden tiles
+	var screen := get_screen_from_position(explosion_pos)
+	if screen not in bombable_tiles:
+		return
+
+	var screen_tile_x := screen.x * SCREEN_WIDTH_TILES
+	var screen_tile_y := screen.y * SCREEN_HEIGHT_TILES
+
+	for entry in bombable_tiles[screen]:
+		var tile: Vector2i = entry["tile"]
+		var map_cell := Vector2i(screen_tile_x + tile.x, screen_tile_y + tile.y)
+
+		# Check if already revealed
+		var reveal_key := "%d,%d" % [map_cell.x, map_cell.y]
+		if reveal_key in GameManager.revealed_tiles:
+			continue
+
+		# Calculate tile center in world space
+		var tile_center := Vector2(
+			map_cell.x * TILE_SIZE + TILE_SIZE / 2.0,
+			map_cell.y * TILE_SIZE + TILE_SIZE / 2.0
+		)
+
+		# Check if explosion is close enough (within 24px radius)
+		if explosion_pos.distance_to(tile_center) <= 24.0:
+			_reveal_tile(screen, entry, map_cell, reveal_key)
+
+
+func _reveal_tile(screen: Vector2i, entry: Dictionary, map_cell: Vector2i, reveal_key: String) -> void:
+	## Replace a bombable tile and optionally register a cave entrance
+	var replacement: Vector2i = entry["replacement"]
+	tilemap.set_cell(map_cell, 0, replacement)
+
+	# Register cave entrance if defined
+	if entry.has("cave"):
+		cave_entrances[screen] = {
+			"tile": entry["tile"],
+			"destination": entry["cave"]
+		}
+
+	# Persist the reveal
+	GameManager.revealed_tiles.append(reveal_key)
+	print("Revealed bombable tile at map cell %s (screen %s)" % [map_cell, screen])
+
+
+func _restore_revealed_tiles() -> void:
+	## Re-apply any tiles that were previously revealed by bombs
+	for screen_key in bombable_tiles:
+		var screen: Vector2i = screen_key
+		var screen_tile_x: int = screen.x * SCREEN_WIDTH_TILES
+		var screen_tile_y: int = screen.y * SCREEN_HEIGHT_TILES
+		for entry in bombable_tiles[screen]:
+			var tile: Vector2i = entry["tile"]
+			var map_cell := Vector2i(screen_tile_x + tile.x, screen_tile_y + tile.y)
+			var reveal_key := "%d,%d" % [map_cell.x, map_cell.y]
+			if reveal_key in GameManager.revealed_tiles:
+				tilemap.set_cell(map_cell, 0, entry["replacement"])
+				if entry.has("cave"):
+					cave_entrances[screen] = {
+						"tile": entry["tile"],
+						"destination": entry["cave"]
+					}
 
 
 # =============================================================================

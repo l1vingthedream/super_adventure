@@ -76,13 +76,13 @@ func create_text_sprites(text: String, color: FontColor = FontColor.WHITE, paren
 	var x_offset := 0
 
 	for i in range(text.length()):
-		var char := text[i]
+		var ch := text[i]
 
-		if char == " ":
+		if ch == " ":
 			x_offset += CHAR_WIDTH
 			continue
 
-		var region := get_char_region(char, color)
+		var region := get_char_region(ch, color)
 		if region == Rect2():
 			x_offset += CHAR_WIDTH
 			continue

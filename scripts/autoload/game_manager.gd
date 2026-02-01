@@ -75,6 +75,9 @@ var cave_exit_tile := Vector2i(4, 1)  # Tile position within screen (0-based)
 var has_purchased_bombs := false  # Unlocks bomb drops from enemies
 var has_shield := false  # Player owns a shield
 
+# Persistent world state
+var revealed_tiles: Array[String] = []  # "x,y" map cell keys of bomb-revealed tiles
+
 # Debug state
 var debug_invincible := false
 var debug_warp_menu: Node = null

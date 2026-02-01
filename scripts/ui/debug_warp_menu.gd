@@ -180,10 +180,10 @@ func _refresh_labels() -> void:
 		labels[i].position.y = 18 + i * LINE_HEIGHT
 
 
-func _show_list_labels(show: bool) -> void:
+func _show_list_labels(should_show: bool) -> void:
 	for lbl in labels:
-		lbl.visible = show
-	title_label.text = "CUSTOM WARP  0=BACK" if not show else "WARP MENU  0=CLOSE"
+		lbl.visible = should_show
+	title_label.text = "CUSTOM WARP  0=BACK" if not should_show else "WARP MENU  0=CLOSE"
 
 
 func _update_custom_label() -> void:

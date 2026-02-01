@@ -34,6 +34,11 @@ func _deal_damage() -> void:
 			if area.has_method("destroy"):
 				area.destroy()
 
+	# Check for bombable tiles to reveal
+	var screen_manager = get_tree().current_scene
+	if screen_manager and screen_manager.has_method("try_bomb_reveal"):
+		screen_manager.try_bomb_reveal(global_position)
+
 
 func _on_animation_finished() -> void:
 	queue_free()
