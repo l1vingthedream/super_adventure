@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/adventure_enemies.png" id="1_enemies"]
+[ext_resource type="Script" path="res://scripts/enemies/moblin_spear.gd" id="2_script"]
+
+[sub_resource type="CircleShape2D" id="collision_shape"]
+radius = 4.0
+
+[node name="MoblinSpear" type="Area2D"]
+collision_layer = 8
+collision_mask = 2
+script = ExtResource("2_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_enemies")
+region_enabled = true
+region_rect = Rect2(150, 11, 8, 16)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("collision_shape")
