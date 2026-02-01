@@ -4,12 +4,29 @@ A spiritual successor to the original Legend of Zelda, built with Godot 4.x.
 
 ---
 
+## URGENT TODO: Armos Statue Collision Bug
+
+The Armos statue tile is not collidable — the player walks right through it instead of bumping into it to trigger the Armos enemy emergence. The statue tile must be solid/collidable so the player cannot pass through it, and contact with it triggers the Armos to activate.
+
+- [ ] Make Armos statue tiles collidable so the player cannot walk through them
+- [ ] Ensure player contact with the statue tile triggers Armos emergence
+
+---
+
+## URGENT TODO: Moblin Sprite Flip Bug
+
+Moblin sprites appear incorrect, possibly related to flip_h usage for walk_down/walk_up animations. The sprite coordinates are confirmed correct but the in-game result looks wrong. Investigate how flip_h is applied to the down/up walk animations (currently using same frame twice with flip_h for frame 2).
+
+- [ ] Fix Moblin sprite flip issue
+
+---
+
 ## URGENT TODO: Old Man Cave Dialogue Box
 
 The dialogue box in the old man cave is not displaying text correctly:
 
-- [ ] **Fix font character mapping** - Current CHAR_MAP in `scripts/ui/dialogue_box.gd` does not match actual Fonts.png layout. Need to examine Fonts.png and create correct character-to-coordinate mapping.
-- [ ] **Move text display 2 tiles lower** - Text should be on rows 5-6 (y=80, y=92) instead of rows 3-4 (y=48, y=60). Update ROW_3_Y and ROW_4_Y constants in dialogue_box.gd.
+- [x] **Fix font character mapping** - Current CHAR_MAP in `scripts/ui/dialogue_box.gd` does not match actual Fonts.png layout. Need to examine Fonts.png and create correct character-to-coordinate mapping.
+- [x] **Move text display 2 tiles lower** - Text should be on rows 5-6 (y=80, y=92) instead of rows 3-4 (y=48, y=60). Update ROW_3_Y and ROW_4_Y constants in dialogue_box.gd.
 
 Files to fix:
 - `scripts/ui/dialogue_box.gd` - CHAR_MAP dictionary and ROW constants
@@ -169,8 +186,8 @@ queue_free()
 - [x] Tektite (red/blue) - hops randomly
 - [x] Leever (red/blue) - emerges from sand
 - [x] Peahat - flies, invulnerable while moving
-- [ ] Moblin (red/blue) - walks, throws spears
-- [ ] Armos - statue, activates when touched
+- [x] Moblin (red/blue) - walks, throws spears
+- [x] Armos - statue, activates when touched
 - [ ] Lynel (red/blue) - walks, shoots sword beams
 - [ ] Zora - emerges from water, shoots fireballs
 - [x] Rock - falls from mountains
