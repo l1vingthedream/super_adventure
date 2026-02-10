@@ -1,0 +1,99 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/adventure_enemies.png" id="1_enemies"]
+[ext_resource type="Script" path="res://scripts/enemies/zora.gd" id="2_script"]
+[ext_resource type="Shader" path="res://assets/shaders/enemy_palette_swap.gdshader" id="3_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_enemy"]
+shader = ExtResource("3_shader")
+shader_parameter/palette_frame = 0
+
+[sub_resource type="AtlasTexture" id="emerge_1"]
+atlas = ExtResource("1_enemies")
+region = Rect2(189, 11, 16, 16)
+
+[sub_resource type="AtlasTexture" id="emerge_2"]
+atlas = ExtResource("1_enemies")
+region = Rect2(206, 11, 16, 16)
+
+[sub_resource type="AtlasTexture" id="face_down"]
+atlas = ExtResource("1_enemies")
+region = Rect2(223, 11, 16, 16)
+
+[sub_resource type="AtlasTexture" id="face_up"]
+atlas = ExtResource("1_enemies")
+region = Rect2(240, 11, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_zora"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("emerge_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("emerge_2")
+}],
+"loop": false,
+"name": &"emerge",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("face_down")
+}],
+"loop": false,
+"name": &"face_down",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("face_up")
+}],
+"loop": false,
+"name": &"face_up",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("emerge_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("emerge_1")
+}],
+"loop": false,
+"name": &"submerge",
+"speed": 4.0
+}]
+
+[sub_resource type="RectangleShape2D" id="collision_shape"]
+size = Vector2(12, 12)
+
+[sub_resource type="RectangleShape2D" id="hitbox_shape"]
+size = Vector2(14, 14)
+
+[node name="Zora" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("2_script")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+material = SubResource("ShaderMaterial_enemy")
+sprite_frames = SubResource("SpriteFrames_zora")
+animation = &"face_down"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("collision_shape")
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 0
+
+[node name="HitboxShape" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("hitbox_shape")
+
+[node name="ContactDamage" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="ContactShape" type="CollisionShape2D" parent="ContactDamage"]
+shape = SubResource("collision_shape")

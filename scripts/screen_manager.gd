@@ -503,6 +503,23 @@ func _spawn_enemies_for_screen(screen: Vector2i) -> void:
 		_spawn_moblin(Vector2(screen_left + 96, screen_top + 64), Moblin.MoblinColor.BLUE)
 		_spawn_moblin(Vector2(screen_left + 160, screen_top + 112), Moblin.MoblinColor.BLUE)
 
+	# Spawn Lynels (test screens - user will specify final placement)
+	if screen == Vector2i(8, 6):
+		_spawn_lynel(Vector2(screen_left + 80, screen_top + 64), Lynel.LynelColor.RED)
+		_spawn_lynel(Vector2(screen_left + 176, screen_top + 112), Lynel.LynelColor.RED)
+	if screen == Vector2i(8, 4):
+		_spawn_lynel(Vector2(screen_left + 96, screen_top + 72), Lynel.LynelColor.BLUE)
+		_spawn_lynel(Vector2(screen_left + 160, screen_top + 96), Lynel.LynelColor.BLUE)
+
+	# Spawn Zoras (test screens - user will specify final placement with water tiles)
+	# Note: Zoras need to be placed on screens with water tiles (tile ID 39)
+	if screen == Vector2i(5, 4):
+		_spawn_zora(Vector2(screen_left + 80, screen_top + 72))
+		_spawn_zora(Vector2(screen_left + 176, screen_top + 96))
+	if screen == Vector2i(14, 5):
+		_spawn_zora(Vector2(screen_left + 96, screen_top + 80))
+		_spawn_zora(Vector2(screen_left + 160, screen_top + 104))
+
 	# Scan for Armos statue tiles on this screen
 	_scan_armos_tiles(screen)
 
@@ -556,6 +573,21 @@ func _spawn_moblin(pos: Vector2, moblin_color: Moblin.MoblinColor) -> void:
 	moblin.color = moblin_color
 	moblin.global_position = pos
 	enemies_container.add_child(moblin)
+
+
+func _spawn_lynel(pos: Vector2, lynel_color: Lynel.LynelColor) -> void:
+	## Spawn a Lynel at the given position with the specified color
+	var lynel = preload("res://scenes/enemies/lynel.tscn").instantiate()
+	lynel.color = lynel_color
+	lynel.global_position = pos
+	enemies_container.add_child(lynel)
+
+
+func _spawn_zora(pos: Vector2) -> void:
+	## Spawn a Zora at the given position (should be on water tiles)
+	var zora = preload("res://scenes/enemies/zora.tscn").instantiate()
+	zora.global_position = pos
+	enemies_container.add_child(zora)
 
 
 func _spawn_peahat(pos: Vector2) -> void:

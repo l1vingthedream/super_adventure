@@ -188,8 +188,8 @@ queue_free()
 - [x] Peahat - flies, invulnerable while moving
 - [x] Moblin (red/blue) - walks, throws spears
 - [x] Armos - statue, activates when touched
-- [ ] Lynel (red/blue) - walks, shoots sword beams
-- [ ] Zora - emerges from water, shoots fireballs
+- [x] Lynel (red/blue) - walks, shoots sword beams
+- [x] Zora - emerges from water, shoots fireballs
 - [x] Rock - falls from mountains
 - [x] Ghini - gliding ghost
 

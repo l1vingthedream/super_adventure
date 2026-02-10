@@ -1,0 +1,143 @@
+[gd_scene load_steps=20 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/adventure_enemies.png" id="1_enemies"]
+[ext_resource type="Script" path="res://scripts/enemies/lynel.gd" id="2_script"]
+[ext_resource type="Shader" path="res://assets/shaders/enemy_palette_swap.gdshader" id="3_shader"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_enemy"]
+shader = ExtResource("3_shader")
+shader_parameter/palette_frame = 0
+
+[sub_resource type="AtlasTexture" id="red_down"]
+atlas = ExtResource("1_enemies")
+region = Rect2(90, 59, 16, 16)
+
+[sub_resource type="AtlasTexture" id="red_up"]
+atlas = ExtResource("1_enemies")
+region = Rect2(107, 59, 16, 16)
+
+[sub_resource type="AtlasTexture" id="red_right_1"]
+atlas = ExtResource("1_enemies")
+region = Rect2(124, 59, 16, 16)
+
+[sub_resource type="AtlasTexture" id="red_right_2"]
+atlas = ExtResource("1_enemies")
+region = Rect2(141, 59, 16, 16)
+
+[sub_resource type="AtlasTexture" id="blue_down"]
+atlas = ExtResource("1_enemies")
+region = Rect2(90, 76, 16, 16)
+
+[sub_resource type="AtlasTexture" id="blue_up"]
+atlas = ExtResource("1_enemies")
+region = Rect2(107, 76, 16, 16)
+
+[sub_resource type="AtlasTexture" id="blue_right_1"]
+atlas = ExtResource("1_enemies")
+region = Rect2(124, 76, 16, 16)
+
+[sub_resource type="AtlasTexture" id="blue_right_2"]
+atlas = ExtResource("1_enemies")
+region = Rect2(141, 76, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lynel"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("red_down")
+}, {
+"duration": 1.0,
+"texture": SubResource("red_down")
+}],
+"loop": true,
+"name": &"red_walk_down",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("red_up")
+}, {
+"duration": 1.0,
+"texture": SubResource("red_up")
+}],
+"loop": true,
+"name": &"red_walk_up",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("red_right_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("red_right_2")
+}],
+"loop": true,
+"name": &"red_walk_side",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("blue_down")
+}, {
+"duration": 1.0,
+"texture": SubResource("blue_down")
+}],
+"loop": true,
+"name": &"blue_walk_down",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("blue_up")
+}, {
+"duration": 1.0,
+"texture": SubResource("blue_up")
+}],
+"loop": true,
+"name": &"blue_walk_up",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("blue_right_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("blue_right_2")
+}],
+"loop": true,
+"name": &"blue_walk_side",
+"speed": 6.0
+}]
+
+[sub_resource type="RectangleShape2D" id="collision_shape"]
+size = Vector2(12, 12)
+
+[sub_resource type="RectangleShape2D" id="hitbox_shape"]
+size = Vector2(14, 14)
+
+[node name="Lynel" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("2_script")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+material = SubResource("ShaderMaterial_enemy")
+sprite_frames = SubResource("SpriteFrames_lynel")
+animation = &"red_walk_down"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("collision_shape")
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 0
+
+[node name="HitboxShape" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("hitbox_shape")
+
+[node name="ContactDamage" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="ContactShape" type="CollisionShape2D" parent="ContactDamage"]
+shape = SubResource("collision_shape")
